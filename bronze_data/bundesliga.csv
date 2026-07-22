@@ -1,0 +1,500 @@
+﻿"number";"player";"team";"apps";"min";"goals";"NPG";"a"
+1;"Harry Kane";"Bayern Munich";31;2385;36;26;5
+2;"Deniz Undav";"VfB Stuttgart";29;2261;19;19;6
+3;"Serhou Guirassy";"Borussia Dortmund";33;2366;17;16;1
+4;"Patrik Schick";"Bayer Leverkusen";28;2005;16;12;3
+5;"Michael Olise";"Bayern Munich";32;2308;15;15;19
+6;"Luis Díaz";"Bayern Munich";32;2464;15;15;14
+7;"Andrej Kramaric";"Hoffenheim";34;2256;14;9;6
+8;"Jonathan Burkardt";"Eintracht Frankfurt";22;1351;13;9;1
+9;"Christoph Baumgartner";"RasenBallsport Leipzig";33;2811;13;13;8
+10;"Haris Tabakovic";"Borussia M.Gladbach";32;2424;13;13;2
+11;"Said El Mala";"FC Cologne";34;1965;13;12;4
+12;"Nadiem Amiri";"Mainz 05";26;2112;12;4;2
+13;"Ermedin Demirovic";"VfB Stuttgart";25;1507;12;11;3
+14;"Yan Diomande";"RasenBallsport Leipzig";33;2507;12;12;8
+15;"Igor Matanovic";"Freiburg";31;1536;11;10;2
+16;"Fisnik Asllani";"Hoffenheim";33;2429;10;10;7
+17;"Jens Stage";"Werder Bremen";29;2489;10;10;2
+18;"Maximilian Beier";"Borussia Dortmund";32;2069;9;9;6
+19;"Rômulo";"RasenBallsport Leipzig";30;2246;9;9;4
+20;"Serge Gnabry";"Bayern Munich";21;1280;8;8;6
+21;"Tim Lemperle";"Hoffenheim";29;2008;8;7;2
+22;"Nicolas Jackson";"Bayern Munich";23;991;8;8;1
+23;"Dzenan Pejcinovic";"Wolfsburg";30;1445;8;8;0
+24;"Álex Grimaldo";"Bayer Leverkusen";29;2539;8;5;7
+25;"Can Uzun";"Eintracht Frankfurt";21;1178;8;7;4
+26;"Mohammed Amoura";"Wolfsburg";30;1949;8;7;3
+27;"Julian Brandt";"Borussia Dortmund";29;1601;7;7;4
+28;"Grischa Prömel";"Hoffenheim";33;1696;7;7;2
+29;"Vincenzo Grifo";"Freiburg";33;1733;7;3;4
+30;"Chris Führich";"VfB Stuttgart";33;1727;7;7;7
+31;"Ragnar Ache";"FC Cologne";29;1739;7;7;4
+32;"Jamie Leweling";"VfB Stuttgart";32;2385;7;7;9
+33;"Jakub Kaminski";"FC Cologne";34;3031;7;7;3
+34;"Karim Adeyemi";"Borussia Dortmund";28;1218;7;7;4
+35;"Fábio Vieira";"Hamburger SV";29;2241;7;6;5
+36;"Michael Gregoritsch";"Augsburg";17;926;6;5;2
+37;"Maximilian Mittelstädt";"VfB Stuttgart";32;2200;6;2;4
+38;"Oliver Burke";"Union Berlin";29;1699;6;6;2
+39;"Arnaud Kalimuendo Muinga";"Eintracht Frankfurt";19;1431;6;6;1
+40;"Malik Tillman";"Bayer Leverkusen";29;1681;6;6;1
+41;"Anton Kade";"Augsburg";28;1740;6;6;0
+42;"Phillip Tietz";"Augsburg,Mainz 05";29;1811;6;6;2
+43;"Fabian Rieder";"Augsburg";32;2387;6;4;3
+44;"Budu Zivzivadze";"FC Heidenheim";20;1148;6;6;0
+45;"Luka Vuskovic";"Hamburger SV";28;2440;6;5;0
+46;"Gian-Luca Waldschmidt";"FC Cologne";24;633;5;3;5
+47;"Leon Goretzka";"Bayern Munich";31;2004;5;5;3
+48;"Kevin Diks";"Borussia M.Gladbach";30;2472;5;1;0
+49;"Ramy Bensebaini";"Borussia Dortmund";21;1524;5;3;2
+50;"Raphael Guerreiro";"Bayern Munich";18;779;5;5;2
+51;"Rani Khedira";"Union Berlin";32;2854;5;5;1
+52;"Alexis Claude Maurice";"Augsburg";29;2135;5;4;4
+53;"Nico Schlotterbeck";"Borussia Dortmund";28;2520;5;5;1
+54;"Rayan Philippe";"Hamburger SV";28;1272;5;5;0
+55;"Marius Bülter";"FC Cologne";32;1578;5;5;4
+56;"Edmond Tapsoba";"Bayer Leverkusen";29;2579;5;5;3
+57;"Ritsu Doan";"Eintracht Frankfurt";31;2425;5;5;5
+58;"Paul Nebel";"Mainz 05";30;2087;5;5;2
+59;"Albert Sambi Lokonga";"Hamburger SV";26;1724;5;5;0
+60;"Tiago Tomás";"VfB Stuttgart";27;996;5;5;3
+61;"Justin Njinmah";"Werder Bremen";33;1963;5;5;0
+62;"Danilho Doekhi";"Union Berlin";34;3060;5;5;0
+63;"Derry Scherhant";"Freiburg";31;1253;5;5;1
+64;"Stefan Schimmer";"FC Heidenheim";27;737;5;5;1
+65;"Andrej Ilic";"Union Berlin";32;2238;5;5;9
+66;"Danel Sinani";"St. Pauli";30;2080;5;2;3
+67;"Johan Manzambi";"Freiburg";27;2145;5;5;4
+68;"Bazoumana Touré";"Hoffenheim";30;2379;5;5;9
+69;"Lennart Karl";"Bayern Munich";26;1268;5;5;5
+70;"Christian Kofane";"Bayer Leverkusen";29;1231;5;5;4
+71;"Ernest Poku";"Bayer Leverkusen";29;1471;5;5;5
+72;"Ilyas Ansah";"Union Berlin";33;1960;5;5;1
+73;"Ransford Königsdörffer";"Hamburger SV";33;2425;5;5;0
+74;"Martin Terrier";"Bayer Leverkusen";18;667;4;4;1
+75;"Nikolas Nartey";"VfB Stuttgart";28;1255;4;4;3
+76;"Woo-Yeong Jeong";"Union Berlin";28;1182;4;4;1
+77;"Ozan Kabak";"Hoffenheim";25;1731;4;4;0
+78;"Ansgar Knauff";"Eintracht Frankfurt";28;1302;4;4;1
+79;"Romano Schmid";"Werder Bremen";34;3004;4;1;8
+80;"Patrick Wimmer";"Wolfsburg";25;1678;4;4;3
+81;"Jae-Sung Lee";"Mainz 05";28;2229;4;4;2
+82;"Yuito Suzuki";"Freiburg";25;1645;4;4;2
+83;"Marvin Pieringer";"FC Heidenheim";27;1689;4;3;1
+84;"Antonio Nusa";"RasenBallsport Leipzig";31;2048;4;4;3
+85;"Bilal El Khannouss";"VfB Stuttgart";25;1654;4;4;5
+86;"Konstantinos Koulierakis";"Wolfsburg";29;2476;4;4;1
+87;"Nathaniel Brown";"Eintracht Frankfurt";33;2668;4;4;4
+88;"Assan Ouédraogo";"RasenBallsport Leipzig";19;970;4;4;3
+89;"Wouter Burger";"Hoffenheim";30;2486;4;4;5
+90;"Andréas Hountondji";"St. Pauli";21;1092;4;4;0
+91;"Maximilian Eggestein";"Freiburg";34;3060;3;3;1
+92;"Matthias Ginter";"Freiburg";32;2845;3;3;3
+93;"Emre Can";"Borussia Dortmund";9;627;3;0;0
+94;"Christian Eriksen";"Wolfsburg";31;2446;3;0;9
+95;"Aleix García";"Bayer Leverkusen";33;2708;3;3;7
+96;"Jean-Luc Dompe";"Hamburger SV";20;1132;3;2;0
+97;"Konrad Laimer";"Bayern Munich";29;1997;3;3;9
+98;"Robin Koch";"Eintracht Frankfurt";32;2840;3;3;1
+99;"Lucas Höler";"Freiburg";33;2070;3;3;1
+100;"Mattias Svanberg";"Wolfsburg";24;814;3;3;1
+101;"Xaver Schlager";"RasenBallsport Leipzig";26;1844;3;3;1
+102;"Sheraldo Becker";"Mainz 05";14;975;3;3;3
+103;"Jan Thielmann";"FC Cologne";26;1582;3;3;1
+104;"Jamal Musiala";"Bayern Munich";15;666;3;2;4
+105;"Eren Sami Dinkci";"FC Heidenheim,Freiburg";22;1401;3;3;1
+106;"Robert Glatzel";"Hamburger SV";19;594;3;2;2
+107;"David Raum";"RasenBallsport Leipzig";30;2570;3;2;7
+108;"Jarell Quansah";"Bayer Leverkusen";28;2303;3;3;0
+109;"Tom Bischof";"Bayern Munich";26;1282;3;3;3
+110;"Jean Négoce";"Eintracht Frankfurt";27;1322;3;3;4
+111;"Brajan Gruda";"RasenBallsport Leipzig";13;760;3;3;3
+112;"Ibrahim Maza";"Bayer Leverkusen";28;1845;3;3;4
+113;"Aleksandar Pavlovic";"Bayern Munich";24;1451;3;3;1
+114;"Jovan Milosevic";"Werder Bremen";13;476;3;3;1
+115;"Jan Schöppner";"FC Heidenheim";31;2286;3;3;3
+116;"Samuel Mbangula";"Werder Bremen";26;1160;3;3;2
+117;"Leopold Querfeld";"Union Berlin";31;2701;3;1;0
+118;"Marco Grüll";"Werder Bremen";33;2039;3;3;1
+119;"Alexander Prass";"Hoffenheim";32;1269;3;3;2
+120;"Shuto Machino";"Borussia M.Gladbach";32;1046;3;3;1
+121;"Chema Andres";"VfB Stuttgart";25;1299;3;3;0
+122;"Abdoulie Ceesay";"St. Pauli";20;282;3;3;0
+123;"Julian Niehues";"FC Heidenheim";24;1416;3;3;0
+124;"Robin Fellhauer";"Augsburg";34;2829;3;3;2
+125;"Jens Castrop";"Borussia M.Gladbach";26;1613;3;3;1
+126;"Martijn Kaars";"St. Pauli";29;1331;3;2;1
+127;"Conrad Harder";"RasenBallsport Leipzig";29;886;3;3;3
+128;"Stefan Bell";"Mainz 05";18;1044;2;2;1
+129;"Waldemar Anton";"Borussia Dortmund";32;2880;2;2;0
+130;"Jonathan Tah";"Bayern Munich";28;2031;2;2;1
+131;"Mahmoud Dahoud";"Eintracht Frankfurt";15;722;2;2;3
+132;"Joshua Kimmich";"Bayern Munich";29;2268;2;2;8
+133;"Danny da Costa";"Mainz 05";34;2689;2;2;3
+134;"Dominik Kohr";"Mainz 05";29;2366;2;2;0
+135;"Jonas Hofmann";"Bayer Leverkusen";23;997;2;2;2
+136;"Silvan Widmer";"Mainz 05";27;1855;2;2;1
+137;"Franck Honorat";"Borussia M.Gladbach";28;2021;2;2;6
+138;"Willi Orban";"RasenBallsport Leipzig";33;2952;2;2;0
+139;"Lukas Kübler";"Freiburg";23;1616;2;2;2
+140;"Hauke Wahl";"St. Pauli";30;2591;2;2;1
+141;"Elvis Rexhbecaj";"Augsburg";26;1098;2;2;0
+142;"Linton Maina";"FC Cologne";24;1007;2;2;0
+143;"Bote Baku";"RasenBallsport Leipzig";32;2538;2;2;3
+144;"Han-Noah Massengo";"Augsburg";33;2455;2;2;1
+145;"Andras Schafer";"Union Berlin";28;1420;2;2;1
+146;"Pereira Lage";"St. Pauli";28;2067;2;2;2
+147;"Robert Andrich";"Bayer Leverkusen";32;2550;2;2;0
+148;"Fabio Silva";"Borussia Dortmund";28;784;2;2;6
+149;"Eric Martel";"FC Cologne";31;2579;2;2;2
+150;"Felix Nmecha";"Borussia Dortmund";29;2208;2;2;3
+151;"Armindo Sieb";"Mainz 05";22;497;2;2;0
+152;"Carney Chukwuemeka";"Borussia Dortmund";28;869;2;2;0
+153;"Josip Stanisic";"Bayern Munich";26;1842;2;2;3
+154;"Joe Scally";"Borussia M.Gladbach";32;2615;2;2;3
+155;"Angelo Stiller";"VfB Stuttgart";34;2752;2;2;5
+156;"Dimitris Giannoulis";"Augsburg";27;1957;2;2;5
+157;"Lovro Majer";"Wolfsburg";28;1390;2;2;3
+158;"Kristijan Jakic";"Augsburg";26;1655;2;2;1
+159;"Arijon Ibrahimovic";"FC Heidenheim";32;2196;2;1;4
+160;"Yannick Engelhardt";"Borussia M.Gladbach";31;2506;2;2;2
+161;"Tom Rothe";"Union Berlin";21;1018;2;2;0
+162;"Rasmus Kristensen";"Eintracht Frankfurt";22;1555;2;2;0
+163;"Farès Chaïbi";"Eintracht Frankfurt";28;1822;2;2;9
+164;"Aaron Zehnter";"Wolfsburg";20;1467;2;2;0
+165;"Yan Couto";"Borussia Dortmund";19;989;2;2;2
+166;"Mert Kömür";"Augsburg";28;1455;2;2;4
+167;"Patrick Mainka";"FC Heidenheim";34;3060;2;2;2
+168;"Hugo Larsson";"Eintracht Frankfurt";25;1839;2;2;2
+169;"Mathias Honsak";"FC Heidenheim";27;1263;2;2;1
+170;"Jan-Niklas Beste";"Freiburg";28;1721;2;2;2
+171;"Rodrigo Ribeiro";"Augsburg";14;629;2;2;0
+172;"Max Moerstedt";"Hoffenheim";22;334;2;2;0
+173;"Philipp Sander";"Borussia M.Gladbach";30;2475;2;2;0
+174;"Eric Smith";"St. Pauli";27;2313;2;2;2
+175;"Luca Kerber";"FC Heidenheim";18;670;2;2;0
+176;"Sirlord Conteh";"FC Heidenheim";15;585;2;2;1
+177;"Arthur Chaves";"Augsburg,Hoffenheim";15;1062;2;2;0
+178;"Daniel Svensson";"Borussia Dortmund";33;2454;2;2;2
+179;"Marin Ljubicic";"Union Berlin";2;11;2;2;0
+180;"Johan Bakayoko";"RasenBallsport Leipzig";20;764;2;2;0
+181;"Ísak Bergmann Jóhannesson";"FC Cologne";31;1830;2;2;2
+182;"Adam Daghim";"Wolfsburg";27;1328;2;2;3
+183;"Wael Mohya";"Borussia M.Gladbach";15;533;2;2;1
+184;"Ricky-Jade Jones";"St. Pauli";9;344;2;2;0
+185;"Ayoube Amaimouni-Echghouyab";"Eintracht Frankfurt";17;551;2;2;3
+186;"Yannick Gerhardt";"Wolfsburg";19;1080;1;1;0
+187;"Maximilian Arnold";"Wolfsburg";25;1837;1;1;4
+188;"Benjamin Henrichs";"RasenBallsport Leipzig";17;275;1;1;0
+189;"Michy Batshuayi";"Eintracht Frankfurt";6;123;1;0;0
+190;"Lucas Vázquez";"Bayer Leverkusen";12;483;1;1;2
+191;"Philipp Lienhart";"Freiburg";20;1296;1;1;0
+192;"Marius Wolf";"Augsburg";29;1002;1;1;1
+193;"Marnon Busch";"FC Heidenheim";29;1901;1;1;5
+194;"Bakery Jatta";"Hamburger SV";15;934;1;1;1
+195;"Florian Kainz";"FC Cologne";15;245;1;1;1
+196;"Dayotchanculle Upamecano";"Bayern Munich";24;1805;1;1;1
+197;"Marcel Sabitzer";"Borussia Dortmund";26;1835;1;1;2
+198;"Yussuf Poulsen";"Hamburger SV";15;286;1;1;0
+199;"Marco Friedl";"Werder Bremen";30;2552;1;1;0
+200;"Jonas Föhrenbach";"FC Heidenheim";27;2333;1;1;1
+201;"Robin Hack";"Borussia M.Gladbach";8;311;1;1;0
+202;"Stanley N&#039;Soki";"Union Berlin";13;837;1;1;2
+203;"Joshua Vagnoman";"VfB Stuttgart";27;1589;1;1;3
+204;"Kevin Stöger";"Borussia M.Gladbach";29;1322;1;1;1
+205;"Philipp Mwene";"Mainz 05";29;2081;1;1;2
+206;"Alphonso Davies";"Bayern Munich";13;521;1;1;3
+207;"Valentin Gendrey";"Hoffenheim";8;38;1;1;1
+208;"Andreas Skov Olsen";"Wolfsburg";8;365;1;1;0
+209;"Denis Vavro";"Wolfsburg";17;1168;1;1;0
+210;"Giovanni Reyna";"Borussia M.Gladbach";19;485;1;1;0
+211;"Nathan Tella";"Bayer Leverkusen";17;890;1;1;4
+212;"Chrislain Matsima";"Augsburg";18;1494;1;1;1
+213;"Silas Wamangituka";"Mainz 05";8;346;1;1;0
+214;"Vladimir Coufal";"Hoffenheim";34;3032;1;1;8
+215;"Joakim Maehle";"Wolfsburg";16;1226;1;1;2
+216;"Castello Lukeba";"RasenBallsport Leipzig";26;2176;1;1;0
+217;"Patrick Osterhage";"Freiburg";20;1190;1;1;0
+218;"Hiroki Ito";"Bayern Munich";16;918;1;1;2
+219;"Moritz Jenz";"Wolfsburg";22;1795;1;1;0
+220;"Arthur Theate";"Eintracht Frankfurt";24;2147;1;1;0
+221;"Jonas Wind";"Wolfsburg";11;480;1;1;0
+222;"Oscar Fraulo";"Borussia M.Gladbach";4;30;1;1;0
+223;"Tim Skarke";"Union Berlin";22;555;1;1;1
+224;"Kim Min-Jae";"Bayern Munich";25;1621;1;1;1
+225;"Keke Maximilian Topp";"Werder Bremen";20;617;1;1;1
+226;"Josip Juranovic";"Union Berlin";11;309;1;1;1
+227;"Grant-Leon Ranos";"Borussia M.Gladbach";8;89;1;1;0
+228;"Adrian Beck";"FC Heidenheim";24;847;1;1;1
+229;"Arthur";"Bayer Leverkusen";20;1130;1;1;3
+230;"Max Finkgrafe";"RasenBallsport Leipzig";13;491;1;1;1
+231;"Benedict Hollerbach";"Mainz 05";14;903;1;1;2
+232;"Olivier Deman";"Werder Bremen";16;1251;1;1;2
+233;"Mikkel Kaufmann";"FC Heidenheim";16;519;1;1;1
+234;"Junior Adamu";"Freiburg";9;456;1;1;1
+235;"Nnamdi Collins";"Eintracht Frankfurt";23;1490;1;1;2
+236;"Albert Grønbæk";"Hamburger SV";7;500;1;1;2
+237;"Kaishu Sano";"Mainz 05";34;3060;1;1;2
+238;"Samuel Essende";"Augsburg";14;361;1;1;0
+239;"Oscar Højlund";"Eintracht Frankfurt";24;1082;1;1;1
+240;"Karol Mets";"St. Pauli";23;1938;1;1;0
+241;"Philipp Treu";"Freiburg";28;2195;1;1;2
+242;"Manolis Saliakas";"St. Pauli";17;1118;1;1;3
+243;"Adam Dzwigala";"St. Pauli";19;1303;1;1;1
+244;"Léo Scienza";"FC Heidenheim";2;180;1;1;0
+245;"Robin Hranác";"Hoffenheim";29;2261;1;1;0
+246;"Derrick Köhn";"Union Berlin";29;1887;1;0;2
+247;"Noahkai Banks";"Augsburg";23;1746;1;1;1
+248;"Patrice Covic";"Werder Bremen";15;326;1;1;0
+249;"James Sands";"St. Pauli";24;1957;1;1;0
+250;"Hennes Behrens";"FC Heidenheim";16;1321;1;1;2
+251;"Tidiam Gomis";"RasenBallsport Leipzig";18;309;1;1;0
+252;"Aaron Anselmino";"Borussia Dortmund";6;368;1;1;0
+253;"Karim Coulibaly";"Werder Bremen";27;2128;1;1;0
+254;"Adam Kölle";"FC Heidenheim";6;73;1;1;0
+255;"Joel Chima Fujita";"St. Pauli";32;2689;1;1;3
+256;"Louis Oppie";"St. Pauli";23;1606;1;1;0
+257;"Nicolás Capaldo";"Hamburger SV";26;2029;1;1;3
+258;"Albian Hajdari";"Hoffenheim";30;2449;1;1;2
+259;"Isaac Schmidt";"Werder Bremen";19;671;1;1;0
+260;"Alessio Castro-Montes";"FC Cologne";14;662;1;1;3
+261;"Fabio Baldé";"Hamburger SV";16;422;1;1;1
+262;"Cameron Puertas";"Werder Bremen";28;1867;1;1;2
+263;"Montrell Culbreath";"Bayer Leverkusen";12;756;1;1;0
+264;"Livan Burcu";"Union Berlin";18;621;1;1;1
+265;"Kacper Potulski";"Mainz 05";15;1061;1;1;0
+266;"Younes Ebnoutalib";"Eintracht Frankfurt";5;127;1;1;0
+267;"Kento Shiogai";"Wolfsburg";12;292;1;1;0
+268;"Luca Reggiani";"Borussia Dortmund";8;515;1;1;0
+269;"Samuele Inácio";"Borussia Dortmund";7;371;1;1;0
+270;"Philip Otele";"Hamburger SV";9;504;1;1;1
+271;"Hugo Bolin";"Borussia M.Gladbach";13;534;1;1;1
+272;"Salim Musah";"Werder Bremen";8;182;1;1;0
+273;"Timo Werner";"RasenBallsport Leipzig";3;11;0;0;0
+274;"Oliver Baumann";"Hoffenheim";34;3060;0;0;0
+275;"Niklas Süle";"Borussia Dortmund";11;487;0;0;1
+276;"Michael Zetterer";"Eintracht Frankfurt";22;1976;0;0;0
+277;"Dominique Heintz";"FC Cologne";9;381;0;0;0
+278;"Kevin Kampl";"RasenBallsport Leipzig";3;3;0;0;0
+279;"Nico Elvedi";"Borussia M.Gladbach";33;2968;0;0;2
+280;"Manuel Neuer";"Bayern Munich";22;1870;0;0;0
+281;"Sven Ulreich";"Bayern Munich";1;90;0;0;0
+282;"Pascal Groß";"Borussia Dortmund";11;619;0;0;1
+283;"Leonardo Bittencourt";"Werder Bremen";17;588;0;0;1
+284;"Pascal Stenzel";"VfB Stuttgart";2;114;0;0;0
+285;"Timothy Chandler";"Eintracht Frankfurt";1;6;0;0;0
+286;"Marvin Friedrich";"Borussia M.Gladbach";6;144;0;0;0
+287;"Niklas Stark";"Werder Bremen";14;721;0;0;0
+288;"Mario Götze";"Eintracht Frankfurt";21;880;0;0;0
+289;"Robin Zentner";"Mainz 05";10;878;0;0;0
+290;"Alexander Nübel";"VfB Stuttgart";34;3060;0;0;1
+291;"Jeffrey Gouweleeuw";"Augsburg";11;857;0;0;1
+292;"Ellyes Skhiri";"Eintracht Frankfurt";25;1439;0;0;0
+293;"Christian Günter";"Freiburg";24;1559;0;0;3
+294;"Maximilian Philipp";"Freiburg";2;22;0;0;0
+295;"Nicolas Höfler";"Freiburg";13;262;0;0;0
+296;"Janik Haberer";"Union Berlin";28;1662;0;0;1
+297;"Janis Blaswich";"Bayer Leverkusen";11;928;0;0;0
+298;"Marvin Schwäbe";"FC Cologne";34;3060;0;0;0
+299;"Anthony Jung";"Freiburg";12;502;0;0;0
+300;"Jordan Torunarigha";"Hamburger SV";24;1963;0;0;0
+301;"Péter Gulácsi";"RasenBallsport Leipzig";23;2008;0;0;0
+302;"Bernardo";"Hoffenheim";29;2340;0;0;0
+303;"Daniel Heuer Fernandes";"Hamburger SV";33;2970;0;0;0
+304;"Gregor Kobel";"Borussia Dortmund";34;3060;0;0;0
+305;"Salih Özcan";"Borussia Dortmund";11;55;0;0;0
+306;"Arne Maier";"Augsburg";1;1;0;0;0
+307;"Stefan Posch";"Mainz 05";16;1399;0;0;0
+308;"Jonas Meffert";"Hamburger SV";4;134;0;0;0
+309;"Lukas Klostermann";"RasenBallsport Leipzig";5;94;0;0;1
+310;"Arnaud Nordin";"Mainz 05";13;468;0;0;0
+311;"Dan-Axel Zagadou";"VfB Stuttgart";3;216;0;0;0
+312;"Tim Kleindienst";"Borussia M.Gladbach";3;5;0;0;0
+313;"Ihlas Bebou";"Hoffenheim";16;129;0;0;0
+314;"Moritz Nicolas";"Borussia M.Gladbach";34;3060;0;0;0
+315;"Kevin Akpoguma";"Hoffenheim";8;46;0;0;0
+316;"Anthony Caci";"Mainz 05";10;531;0;0;0
+317;"Timo Hübers";"FC Cologne";8;681;0;0;0
+318;"Niklas Dorsch";"FC Heidenheim";32;2293;0;0;1
+319;"Finn Dahmen";"Augsburg";34;3060;0;0;0
+320;"Mark Flekken";"Bayer Leverkusen";24;2132;0;0;0
+321;"Frederik Rönnow";"Union Berlin";30;2640;0;0;0
+322;"Florian Neuhaus";"Borussia M.Gladbach";17;945;0;0;1
+323;"Amos Pieper";"Werder Bremen";19;1510;0;0;0
+324;"Maximilian Wöber";"Werder Bremen";2;29;0;0;0
+325;"Keven Schlotterbeck";"Augsburg";24;2025;0;0;1
+326;"Sacha Boey";"Bayern Munich";9;458;0;0;0
+327;"Mads Pedersen";"Augsburg";7;182;0;0;0
+328;"Robert Skov";"Union Berlin";3;236;0;0;0
+329;"Christopher Trimmel";"Union Berlin";29;1904;0;0;3
+330;"Julian Chabot";"VfB Stuttgart";27;2307;0;0;0
+331;"Julian Ryerson";"Borussia Dortmund";31;2288;0;0;15
+332;"Alex Kral";"Union Berlin";20;394;0;0;0
+333;"Tom Krauß";"FC Cologne";26;1779;0;0;2
+334;"Nick Woltemade";"VfB Stuttgart";1;90;0;0;0
+335;"Yannik Keitel";"Augsburg";6;247;0;0;0
+336;"Exequiel Palacios";"Bayer Leverkusen";18;1079;0;0;1
+337;"Jessic Ngankam";"Eintracht Frankfurt";3;50;0;0;0
+338;"Luca Netz";"Borussia M.Gladbach";15;937;0;0;2
+339;"Immanuel Pherai";"Hamburger SV";6;19;0;0;0
+340;"Loic Bade";"Bayer Leverkusen";23;1655;0;0;0
+341;"Xavi Simons";"RasenBallsport Leipzig";1;90;0;0;0
+342;"Felix Agu";"Werder Bremen";11;757;0;0;0
+343;"Rocco Reitz";"Borussia M.Gladbach";31;2669;0;0;4
+344;"Tim Siersleben";"FC Heidenheim";15;1085;0;0;0
+345;"Atakan Karazor";"VfB Stuttgart";28;1906;0;0;1
+346;"Lorenz Assignon";"VfB Stuttgart";24;1091;0;0;0
+347;"Cenk Özkacar";"FC Cologne";25;1786;0;0;0
+348;"Sepe Elye Wahi";"Eintracht Frankfurt";10;309;0;0;1
+349;"Warmed Omari";"Hamburger SV";20;1606;0;0;1
+350;"William Mikelbrencis";"Hamburger SV";26;1384;0;0;4
+351;"El Chadaille Bitshiabu";"RasenBallsport Leipzig";11;661;0;0;0
+352;"Karl Hein";"Werder Bremen";2;180;0;0;0
+353;"Maxim Leitsch";"Mainz 05";3;158;0;0;0
+354;"Guilherme Ramos";"Hamburger SV";8;31;0;0;0
+355;"Jesper Lindstrom";"Wolfsburg";13;362;0;0;0
+356;"Diant Ramaj";"FC Heidenheim";31;2790;0;0;1
+357;"Ismaël Gharbi";"Augsburg";6;71;0;0;0
+358;"Taichi Hara";"St. Pauli";4;23;0;0;0
+359;"Ben Bobzien";"Mainz 05";1;3;0;0;0
+360;"Jonas Urbig";"Bayern Munich";14;1100;0;0;0
+361;"Piero Hincapié";"Bayer Leverkusen";1;90;0;0;0
+362;"Finley Stevens";"St. Pauli";1;25;0;0;0
+363;"Lennard Maloney";"Mainz 05";21;444;0;0;0
+364;"Noah Atubolu";"Freiburg";34;3060;0;0;0
+365;"Jeanuël Belocian";"Bayer Leverkusen,Wolfsburg";22;1543;0;0;1
+366;"Kevin Paredes";"Wolfsburg";6;151;0;0;0
+367;"Lasse Rieß";"Mainz 05";4;290;0;0;0
+368;"Umut Tohumcu";"Hoffenheim";5;120;0;0;0
+369;"Diogo Leite";"Union Berlin";23;1998;0;0;0
+370;"Muhammed Damar";"Hoffenheim";15;243;0;0;0
+371;"Ben Seghir";"Bayer Leverkusen";10;229;0;0;0
+372;"Adam Hlozek";"Hoffenheim";5;30;0;0;0
+373;"Loïs Openda";"RasenBallsport Leipzig";2;54;0;0;0
+374;"Tim Oermann";"Bayer Leverkusen";2;12;0;0;0
+375;"Vinicius Souza";"Wolfsburg";24;1794;0;0;0
+376;"Kilian Fischer";"Wolfsburg";11;801;0;0;0
+377;"Badredine Bouanani";"VfB Stuttgart";14;451;0;0;0
+378;"Fabio Chiarodia";"Borussia M.Gladbach";15;669;0;0;0
+379;"Denis Huseinbasic";"FC Cologne";15;726;0;0;0
+380;"Nelson Weiper";"Mainz 05";24;486;0;0;0
+381;"Sael Kumbedi";"Wolfsburg";24;1825;0;0;5
+382;"Aljoscha Kemlein";"Union Berlin";30;1984;0;0;2
+383;"Andreas Hanche-Olsen";"Mainz 05";13;843;0;0;1
+384;"Aurélio Buta";"Eintracht Frankfurt";4;131;0;0;0
+385;"Merlin Röhl";"Freiburg";2;52;0;0;0
+386;"Damion Downs";"Hamburger SV";12;534;0;0;0
+387;"Ameen Al Dakhil";"VfB Stuttgart";8;368;0;0;0
+388;"Senne Lynen";"Werder Bremen";31;2766;0;0;0
+389;"Cédric Zesiger";"Augsburg";27;1798;0;0;0
+390;"Václav Cerny";"Wolfsburg";2;40;0;0;0
+391;"Omar Traoré";"FC Heidenheim";26;1506;0;0;2
+392;"Benedikt Gimber";"FC Heidenheim";21;1467;0;0;0
+393;"Victor Boniface";"Werder Bremen";11;309;0;0;2
+394;"Nicolas Seiwald";"RasenBallsport Leipzig";33;2730;0;0;2
+395;"Leart Paqarada";"FC Heidenheim";1;6;0;0;0
+396;"Leonidas Stergiou";"FC Heidenheim,VfB Stuttgart";6;194;0;0;0
+397;"Lukas Ullrich";"Borussia M.Gladbach";23;1301;0;0;0
+398;"Skelly Alvero";"Werder Bremen";2;23;0;0;0
+399;"Thomas Keller";"FC Heidenheim";4;193;0;0;0
+400;"Daniel Batz";"Mainz 05";21;1890;0;0;0
+401;"Jordy Makengo";"Freiburg";20;1160;0;0;1
+402;"Kauã Santos";"Eintracht Frankfurt";13;1084;0;0;0
+403;"Elias Baum";"Eintracht Frankfurt";5;64;0;0;0
+404;"Yannick Eduardo";"Hoffenheim";1;1;0;0;0
+405;"Julián Malatini";"Werder Bremen";11;508;0;0;0
+406;"Isak Hansen-Aaröen";"Werder Bremen";1;1;0;0;0
+407;"Frank Feller";"FC Heidenheim";3;270;0;0;0
+408;"Max Rosenfelder";"Freiburg";12;476;0;0;0
+409;"Yukinari Sugawara";"Werder Bremen";31;2444;0;0;6
+410;"Kosta Nedeljkovic";"RasenBallsport Leipzig";5;251;0;0;0
+411;"Nikolas Veratschnig";"Mainz 05";21;614;0;0;1
+412;"Mio Backhaus";"Werder Bremen";32;2880;0;0;0
+413;"Bruno Ogbus";"Freiburg";18;1180;0;0;0
+414;"Ramon Hendriks";"VfB Stuttgart";31;2011;0;0;3
+415;"Nicolai Remberg";"Hamburger SV";32;2880;0;0;2
+416;"Maarten Vandevoordt";"RasenBallsport Leipzig";12;1052;0;0;0
+417;"Aurèle Amenda";"Eintracht Frankfurt";24;1664;0;0;0
+418;"Kamil Grabara";"Wolfsburg";34;3060;0;0;0
+419;"Bence Dárdai";"Wolfsburg";1;31;0;0;0
+420;"Nikola Vasilj";"St. Pauli";34;3060;0;0;0
+421;"Lars Ritzka";"St. Pauli";21;974;0;0;0
+422;"Jackson Irvine";"St. Pauli";24;1617;0;0;1
+423;"Connor Metcalfe";"St. Pauli";25;536;0;0;2
+424;"Elias Saad";"Augsburg";10;518;0;0;0
+425;"Oladapo Afolayan";"St. Pauli";7;135;0;0;0
+426;"Filippo Mané";"Borussia Dortmund";4;142;0;0;0
+427;"Almugera Kabar";"Borussia Dortmund";1;14;0;0;0
+428;"Cole Campbell";"Borussia Dortmund,Hoffenheim";6;64;0;0;0
+429;"Jahmai Simpson-Pusey";"FC Cologne";11;863;0;0;0
+430;"Axel Tape";"Bayer Leverkusen";6;214;0;0;0
+431;"Jonah Kusi-Asare";"Bayern Munich";1;1;0;0;0
+432;"Carl Klaus";"Union Berlin";4;330;0;0;0
+433;"Luka Djuric";"Hoffenheim";1;5;0;0;0
+434;"Wisdom Mike";"Bayern Munich";4;18;0;0;0
+435;"Mick Schmetgens";"Werder Bremen";2;34;0;0;0
+436;"Luca Jaquez";"VfB Stuttgart";14;893;0;0;1
+437;"Finn Jeltsch";"VfB Stuttgart";23;1501;0;0;1
+438;"Alejo Sarco";"Bayer Leverkusen,Borussia M.Gladbach";6;107;0;0;0
+439;"Charles Herrmann";"Borussia M.Gladbach";1;1;0;0;1
+440;"Jan Bürger";"Wolfsburg";7;247;0;0;0
+441;"Claudio Echeverri";"Bayer Leverkusen";6;112;0;0;0
+442;"Jenson Seelt";"Wolfsburg";9;681;0;0;0
+443;"Ezechiel Banzuzi";"RasenBallsport Leipzig";24;521;0;0;1
+444;"Koki Machida";"Hoffenheim";1;45;0;0;0
+445;"Leon Avdullahu";"Hoffenheim";33;2860;0;0;1
+446;"Yannik Wagner";"FC Heidenheim";4;31;0;0;0
+447;"Cyriaque Irié";"Freiburg";10;331;0;0;0
+448;"Matheo Raab";"Union Berlin";1;90;0;0;0
+449;"Lazar Jovanovic";"VfB Stuttgart";3;23;0;0;0
+450;"Arkadiusz Pyrka";"St. Pauli";31;2596;0;0;1
+451;"Jobe Bellingham";"Borussia Dortmund";32;1779;0;0;1
+452;"Joël Schmied";"FC Cologne";16;1090;0;0;0
+453;"Sebastian Sebulonsen";"FC Cologne";31;2519;0;0;0
+454;"Kristoffer Lund";"FC Cologne";33;2319;0;0;2
+455;"Jusuf Gazibegovic";"FC Cologne";1;17;0;0;0
+456;"Rav van den Berg";"FC Cologne";14;1138;0;0;1
+457;"Daniel Elfadli";"Hamburger SV";21;1257;0;0;0
+458;"Giorgi Gocholeishvili";"Hamburger SV";24;909;0;0;1
+459;"Miro Muheim";"Hamburger SV";29;2443;0;0;4
+460;"Emir Sahiti";"Hamburger SV";2;124;0;0;0
+461;"Alexander Røssing-Lelesiit";"Hamburger SV";11;319;0;0;1
+462;"Aboubaka Soumahoro";"Hamburger SV";4;140;0;0;0
+463;"Otto Stange";"Hamburger SV";10;275;0;0;0
+464;"Andrija Maksimovic";"RasenBallsport Leipzig";8;77;0;0;0
+465;"Aiman Dardari";"Augsburg";3;21;0;0;0
+466;"Sota Kawasaki";"Mainz 05";10;295;0;0;0
+467;"Ezequiél Fernández";"Bayer Leverkusen";20;1009;0;0;1
+468;"William Bøving";"Mainz 05";9;206;0;0;1
+469;"Cassiano Kiala";"Bayern Munich";1;1;0;0;0
+470;"Tobias Weigel";"FC Heidenheim";1;1;0;0;0
+471;"Dmytro Bogdanov";"Union Berlin";2;2;0;0;0
+472;"Jan Urbich";"Borussia M.Gladbach";3;28;0;0;0
+473;"David Santos";"Bayern Munich";2;25;0;0;0
+474;"Fabio Moreno Fell";"Mainz 05";2;80;0;0;0
+475;"Pharell Hensel";"Wolfsburg";5;68;0;0;0
+476;"Samba Konate";"RasenBallsport Leipzig";1;1;0;0;0
+477;"Cenny Neumann";"FC Cologne";2;74;0;0;0
+478;"Tim Schnitzer";"Augsburg";1;1;0;0;0
+479;"Fynn Schenten";"FC Cologne";7;86;0;0;0
+480;"Felipe Chávez";"Bayern Munich,FC Cologne";9;88;0;0;0
+481;"Deniz Ofli";"Bayern Munich";1;2;0;0;0
+482;"Kota Takai";"Borussia M.Gladbach";8;329;0;0;0
+483;"Youssoupha Niang";"FC Cologne";10;179;0;0;0
+484;"Jeremy Arévalo";"VfB Stuttgart";7;21;0;0;1
+485;"Tomoya Ando";"St. Pauli";15;1263;0;0;1
+486;"Sander Tangvik";"Hamburger SV";1;90;0;0;0
+487;"Mathias Rasmussen";"St. Pauli";13;692;0;0;0
+488;"Louis Lemke";"Hamburger SV";1;1;0;0;0
+489;"Love Arrhov";"Eintracht Frankfurt";5;58;0;0;0
+490;"Jonas Adjetey";"Wolfsburg";4;134;0;0;0
+491;"Mathis Albert";"Borussia Dortmund";1;1;0;0;0
+492;"Christian Conteh";"FC Heidenheim";9;398;0;0;0
+493;"Uchenna Ogundu";"Augsburg";5;33;0;0;0
+494;"Rouven Tarnutzer";"Freiburg";1;4;0;0;0
+495;"Maycon Douglas Cardozo";"Bayern Munich";2;31;0;0;0
+496;"Erblin Osmani";"Bayern Munich";1;2;0;0;0
+497;"Shafiq Nandja";"Hamburger SV";2;12;0;0;0
+498;"Linus Güther";"Union Berlin";1;4;0;0;0
+499;"Bara Sapoko Ndiaye";"Bayern Munich";4;146;0;0;0
