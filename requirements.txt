@@ -1,5 +1,24 @@
-selenium==4.18.1
-webdriver-manager==4.0.1
-pandas==2.2.1
-beautifulsoup4==4.12.3
-html5lib==1.1
+# Web Scraping & Automation
+selenium
+webdriver-manager
+undetected-chromedriver
+beautifulsoup4
+html5lib
+lxml
+requests
+
+# Data Processing & Analysis
+pandas
+numpy
+pyarrow
+
+# Environment & Cloud Storage (MinIO / S3)
+python-dotenv
+boto3
+
+# Data Warehouse & Database
+psycopg2-binary
+sqlalchemy
+
+# Web App & Visualization
+streamlit

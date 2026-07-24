@@ -1,0 +1,23 @@
+# Python / Environment
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables (SECURITY - DO NOT REMOVE)
+.env
+
+# Data Directory (Optionnel: garde les scripts mais pas les gigas de data)
+# bronze_data/*.csv
+# silver_data/*.parquet
+# gold_data/
+
+# IDE / VS Code / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Docker logs & Airflow runtime
+docker/logs/
+docker/plugins/
