@@ -1,77 +1,98 @@
 import os
-import io
-import logging
+import re
 import unicodedata
 import pandas as pd
-import boto3
-from botocore.client import Config
 
-# Configuration Log
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# 1. Chargement du fichier CSV
+file_path = "bronze_data/sofifa_pro_players_bronze_20260723_143815.csv"
+df = pd.read_csv(file_path)
 
-MINIO_URL = "http://localhost:9000"
-ACCESS_KEY = "minioadmin"
-SECRET_KEY = "minioadminpassword"
-BRONZE_BUCKET = "bronze-layer"
-SILVER_BUCKET = "silver-layer"
+def clean_sofifa_dataframe(df_raw):
+    df_clean = df_raw.copy()
 
-def get_s3_client():
-    return boto3.client(
-        's3', endpoint_url=MINIO_URL,
-        aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY,
-        config=Config(signature_version='s3v4'), region_name='us-east-1'
-    )
+    # Liste des positions officielles FIFA pour un Matching exact
+    VALID_POSITIONS = {'GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'CDM', 'CM', 'CAM', 'LM', 'RM', 'LW', 'RW', 'CF', 'ST'}
 
-def remove_accents(input_str):
-    if not isinstance(input_str, str):
-        return input_str
-    nfkd_form = unicodedata.normalize('NFKD', input_str)
-    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
+    # A. Séparer le Nom et les Positions de façon stricte
+    def split_name_positions(val):
+        if pd.isna(val): return "", ""
+        tokens = str(val).strip().split()
+        
+        # Récupérer les positions à la fin du texte
+        positions = []
+        while tokens and tokens[-1] in VALID_POSITIONS:
+            positions.insert(0, tokens.pop())
+            
+        name = " ".join(tokens)
+        pos_str = " ".join(positions)
+        return name, pos_str
 
-def parse_currency(val):
-    if pd.isna(val) or not isinstance(val, str):
-        return 0.0
-    val = val.replace('€', '').strip()
-    if 'M' in val:
-        return float(val.replace('M', '')) * 1_000_000
-    elif 'K' in val:
-        return float(val.replace('K', '')) * 1_000
-    try:
-        return float(val)
-    except ValueError:
-        return 0.0
+    df_clean[['Player_Name', 'Positions']] = df_clean['Name'].apply(lambda x: pd.Series(split_name_positions(x)))
+    df_clean['Primary_Position'] = df_clean['Positions'].apply(lambda x: x.split()[0] if x else "Unknown")
 
-def clean_and_merge_sofifa_datasets(df_base, df_advanced):
-    """ Fusionne et nettoie les deux fichiers SoFIFA (Base + Advanced Metrics) """
-    logging.info("🧹 Fusion et nettoyage des fichiers SoFIFA...")
+    # Nom normalisé pour le Matching
+    def remove_accents(input_str):
+        if not isinstance(input_str, str): return ""
+        return "".join([c for c in unicodedata.normalize('NFKD', input_str) if not unicodedata.combining(c)])
 
-    # Normalisation des noms pour le Matching
-    df_base['Clean_Name'] = df_base['Name'].str.replace(r'([A-Z]{2}(?:\s+[A-Z]{2})*)$', '', regex=True).str.strip()
-    df_base['Match_Name'] = df_base['Clean_Name'].apply(remove_accents)
+    df_clean['Match_Name'] = df_clean['Player_Name'].apply(remove_accents)
 
-    df_advanced['Clean_Name'] = df_advanced['Name'].str.replace(r'([A-Z]{2}(?:\s+[A-Z]{2})*)$', '', regex=True).str.strip()
-    df_advanced['Match_Name'] = df_advanced['Clean_Name'].apply(remove_accents)
+    # B. Séparer le Club et la fin du Contrat
+    def split_team_contract(val):
+        if pd.isna(val): return "Unknown", None
+        match = re.search(r'^(.*?)(?:\s+(\d{4}\s*~\s*\d{4}|\d{4}))?$', str(val).strip())
+        if match:
+            team = match.group(1).strip()
+            contract = match.group(2)
+            end_year = contract.split('~')[-1].strip() if contract and '~' in contract else contract
+            return team if team else "Unknown", end_year
+        return str(val).strip(), None
 
-    # MERGE des deux datasets sur le nom nettoyé
-    df_merged = pd.merge(df_base, df_advanced, on='Match_Name', how='inner', suffixes=('', '_adv'))
+    df_clean[['Club', 'Contract_End_Year']] = df_clean['Team & Contract'].apply(lambda x: pd.Series(split_team_contract(x)))
 
-    # Nettoyage Taille / Poids
-    if 'Height' in df_merged.columns:
-        df_merged['Height_cm'] = df_merged['Height'].astype(str).str.extract(r'(\d+)cm').astype(float)
-    if 'Weight' in df_merged.columns:
-        df_merged['Weight_kg'] = df_merged['Weight'].astype(str).str.extract(r'(\d+)kg').astype(float)
+    # C. Nettoyage Taille (cm) et Poids (kg)
+    df_clean['Height_cm'] = df_clean['Height'].astype(str).str.extract(r'(\d+)cm').astype(float)
+    df_clean['Weight_kg'] = df_clean['Weight'].astype(str).str.extract(r'(\d+)kg').astype(float)
 
-    # Parsing Finances
-    if 'Value' in df_merged.columns:
-        df_merged['Value_EUR'] = df_merged['Value'].apply(parse_currency)
-    if 'Wage' in df_merged.columns:
-        df_merged['Wage_EUR'] = df_merged['Wage'].apply(parse_currency)
+    # D. Parsing Finances (€)
+    def parse_currency(val):
+        if pd.isna(val) or not isinstance(val, str): return 0.0
+        val = val.replace('€', '').strip()
+        if 'M' in val: return float(val.replace('M', '')) * 1_000_000
+        if 'K' in val: return float(val.replace('K', '')) * 1_000
+        try: return float(val)
+        except: return 0.0
 
-    # Calculations des KPIs (Feature Engineering)
-    if 'Height_cm' in df_merged.columns and 'Weight_kg' in df_merged.columns:
-        df_merged['BMI'] = (df_merged['Weight_kg'] / ((df_merged['Height_cm'] / 100) ** 2)).round(2)
+    df_clean['Value_EUR'] = df_clean['Value'].apply(parse_currency)
+    df_clean['Wage_EUR'] = df_clean['Wage'].apply(parse_currency)
 
-    logging.info(f"✅ Fusion réussie ! Dataset final SoFIFA : {len(df_merged)} joueurs.")
-    return df_merged
+    # E. Detection dynamique de la colonne Overall
+    overall_col = next((col for col in ['Overall rating', 'Overall_rating', 'Overall'] if col in df_clean.columns), None)
 
-# (باقي كود Upload لـ MinIO كيبقاء كيمشي عادي للـ silver-layer)
+    # F. Feature Engineering (KPIs)
+    if 'Weight_kg' in df_clean.columns and 'Height_cm' in df_clean.columns:
+        df_clean['BMI'] = (df_clean['Weight_kg'] / ((df_clean['Height_cm'] / 100) ** 2)).round(2)
+
+    if overall_col and 'Value_EUR' in df_clean.columns:
+        df_clean['Value_per_Overall'] = (df_clean['Value_EUR'] / df_clean[overall_col]).round(2)
+
+    # Suppression des colonnes brutes inutiles
+    cols_to_drop = ['Name', 'Team & Contract', 'Height', 'Weight', 'Value', 'Wage']
+    df_clean = df_clean.drop(columns=[c for c in cols_to_drop if c in df_clean.columns])
+
+    return df_clean
+
+if __name__ == "__main__":
+    df_cleaned = clean_sofifa_dataframe(df)
+    
+    # Création du dossier silver_data s'il n'existe pas
+    os.makedirs("silver_data", exist_ok=True)
+    
+    # Sauvegarde des données nettoyées au format CSV
+    output_path = "silver_data/sofifa_cleaned_silver.csv"
+    df_cleaned.to_csv(output_path, index=False)
+    
+    print("\n✅ Data Cleaning Silver Terminé et enregistré !")
+    print(f"📁 Fichier sauvegardé : {output_path}")
+    print("\n--- Aperçu des données propres ---")
+    print(df_cleaned[['Player_Name', 'Primary_Position', 'Club', 'Height_cm', 'Weight_kg', 'Value_EUR', 'BMI']].head())
