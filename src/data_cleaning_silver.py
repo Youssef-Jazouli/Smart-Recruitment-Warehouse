@@ -1,43 +1,53 @@
 import os
 import re
+import glob
 import unicodedata
 import pandas as pd
 
-# 1. Chargement du fichier CSV
-file_path = "bronze_data/sofifa_pro_players_bronze_20260723_143815.csv"
-df = pd.read_csv(file_path)
+# 1. Configuration des dossiers
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BRONZE_DIR = os.path.join(BASE_DIR, "bronze_data")
+SILVER_DIR = os.path.join(BASE_DIR, "silver_data")
+os.makedirs(SILVER_DIR, exist_ok=True)
 
-def clean_sofifa_dataframe(df_raw):
-    df_clean = df_raw.copy()
+def remove_accents(input_str):
+    if not isinstance(input_str, str): return ""
+    return "".join([c for c in unicodedata.normalize('NFKD', str(input_str)) if not unicodedata.combining(c)])
 
-    # Liste des positions officielles FIFA pour un Matching exact
+def format_currency(val):
+    """ Formate 7000000.0 en '7M' et 50000.0 en '50K' """
+    if pd.isna(val) or val == 0: return "0"
+    if val >= 1_000_000:
+        return f"{val / 1_000_000:.1f}M".replace('.0M', 'M')
+    elif val >= 1_000:
+        return f"{val / 1_000:.0f}K"
+    return str(int(val))
+
+# 2. Cleaning SoFIFA Data
+print("⏳ Cleaning SoFIFA Data...")
+sofifa_files = glob.glob(os.path.join(BRONZE_DIR, "sofifa_pro_players_bronze_*.csv"))
+
+if sofifa_files:
+    df_sofifa = pd.read_csv(sofifa_files[0])
+    df_sofifa = df_sofifa.loc[:, ~df_sofifa.columns.str.contains('^Unnamed')]
+
     VALID_POSITIONS = {'GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'CDM', 'CM', 'CAM', 'LM', 'RM', 'LW', 'RW', 'CF', 'ST'}
 
-    # A. Séparer le Nom et les Positions de façon stricte
     def split_name_positions(val):
         if pd.isna(val): return "", ""
         tokens = str(val).strip().split()
-        
-        # Récupérer les positions à la fin du texte
         positions = []
         while tokens and tokens[-1] in VALID_POSITIONS:
             positions.insert(0, tokens.pop())
-            
-        name = " ".join(tokens)
-        pos_str = " ".join(positions)
-        return name, pos_str
+        return " ".join(tokens), " ".join(positions)
 
-    df_clean[['Player_Name', 'Positions']] = df_clean['Name'].apply(lambda x: pd.Series(split_name_positions(x)))
-    df_clean['Primary_Position'] = df_clean['Positions'].apply(lambda x: x.split()[0] if x else "Unknown")
+    df_sofifa[['Player_Name', 'Positions']] = df_sofifa['Name'].apply(lambda x: pd.Series(split_name_positions(x)))
+    df_sofifa['Primary_Position'] = df_sofifa['Positions'].apply(lambda x: x.split()[0] if x else "Unknown")
+    df_sofifa['Match_Name'] = df_sofifa['Player_Name'].apply(remove_accents)
 
-    # Nom normalisé pour le Matching
-    def remove_accents(input_str):
-        if not isinstance(input_str, str): return ""
-        return "".join([c for c in unicodedata.normalize('NFKD', input_str) if not unicodedata.combining(c)])
+    # 🔹 Distinction entre Gardiens et Joueurs de champ
+    df_sofifa['Player_Type'] = df_sofifa['Primary_Position'].apply(lambda x: 'Goalkeeper' if x == 'GK' else 'Outfield')
 
-    df_clean['Match_Name'] = df_clean['Player_Name'].apply(remove_accents)
-
-    # B. Séparer le Club et la fin du Contrat
     def split_team_contract(val):
         if pd.isna(val): return "Unknown", None
         match = re.search(r'^(.*?)(?:\s+(\d{4}\s*~\s*\d{4}|\d{4}))?$', str(val).strip())
@@ -48,13 +58,10 @@ def clean_sofifa_dataframe(df_raw):
             return team if team else "Unknown", end_year
         return str(val).strip(), None
 
-    df_clean[['Club', 'Contract_End_Year']] = df_clean['Team & Contract'].apply(lambda x: pd.Series(split_team_contract(x)))
+    df_sofifa[['Club', 'Contract_End_Year']] = df_sofifa['Team & Contract'].apply(lambda x: pd.Series(split_team_contract(x)))
+    df_sofifa['Height_cm'] = df_sofifa['Height'].astype(str).str.extract(r'(\d+)cm').astype(float)
+    df_sofifa['Weight_kg'] = df_sofifa['Weight'].astype(str).str.extract(r'(\d+)kg').astype(float)
 
-    # C. Nettoyage Taille (cm) et Poids (kg)
-    df_clean['Height_cm'] = df_clean['Height'].astype(str).str.extract(r'(\d+)cm').astype(float)
-    df_clean['Weight_kg'] = df_clean['Weight'].astype(str).str.extract(r'(\d+)kg').astype(float)
-
-    # D. Parsing Finances (€)
     def parse_currency(val):
         if pd.isna(val) or not isinstance(val, str): return 0.0
         val = val.replace('€', '').strip()
@@ -63,36 +70,79 @@ def clean_sofifa_dataframe(df_raw):
         try: return float(val)
         except: return 0.0
 
-    df_clean['Value_EUR'] = df_clean['Value'].apply(parse_currency)
-    df_clean['Wage_EUR'] = df_clean['Wage'].apply(parse_currency)
+    df_sofifa['Value_EUR'] = df_sofifa['Value'].apply(parse_currency)
+    df_sofifa['Wage_EUR'] = df_sofifa['Wage'].apply(parse_currency)
 
-    # E. Detection dynamique de la colonne Overall
-    overall_col = next((col for col in ['Overall rating', 'Overall_rating', 'Overall'] if col in df_clean.columns), None)
+    # Nouveaux colonnes formatées (Ex: 7M, 150K)
+    df_sofifa['Value_Formatted'] = df_sofifa['Value_EUR'].apply(format_currency)
+    df_sofifa['Wage_Formatted'] = df_sofifa['Wage_EUR'].apply(format_currency)
 
-    # F. Feature Engineering (KPIs)
-    if 'Weight_kg' in df_clean.columns and 'Height_cm' in df_clean.columns:
-        df_clean['BMI'] = (df_clean['Weight_kg'] / ((df_clean['Height_cm'] / 100) ** 2)).round(2)
-
-    if overall_col and 'Value_EUR' in df_clean.columns:
-        df_clean['Value_per_Overall'] = (df_clean['Value_EUR'] / df_clean[overall_col]).round(2)
-
-    # Suppression des colonnes brutes inutiles
-    cols_to_drop = ['Name', 'Team & Contract', 'Height', 'Weight', 'Value', 'Wage']
-    df_clean = df_clean.drop(columns=[c for c in cols_to_drop if c in df_clean.columns])
-
-    return df_clean
-
-if __name__ == "__main__":
-    df_cleaned = clean_sofifa_dataframe(df)
+    df_sofifa['BMI'] = (df_sofifa['Weight_kg'] / ((df_sofifa['Height_cm'] / 100) ** 2)).round(2)
     
-    # Création du dossier silver_data s'il n'existe pas
-    os.makedirs("silver_data", exist_ok=True)
+    overall_col = next((col for col in ['Overall rating', 'Overall_rating', 'Overall'] if col in df_sofifa.columns), None)
+    if overall_col:
+        df_sofifa['Value_per_Overall'] = (df_sofifa['Value_EUR'] / df_sofifa[overall_col]).round(2)
+
+    cols_to_drop = ['Name', 'Team & Contract', 'Height', 'Weight', 'Value', 'Wage', 'Attacking work rate', 'Defensive work rate']
+    df_sofifa = df_sofifa.drop(columns=[c for c in cols_to_drop if c in df_sofifa.columns])
+else:
+    df_sofifa = None
+
+# 3. Cleaning Understat Leagues
+print("⏳ Cleaning Leagues Data...")
+league_files = ['premier_league.csv', 'la_liga.csv', 'bundesliga.csv', 'serie_a.csv', 'Ligue_1.csv']
+dfs = []
+
+for f in league_files:
+    path = os.path.join(BRONZE_DIR, f)
+    if os.path.exists(path):
+        try:
+            df = pd.read_csv(path, sep=None, engine='python', on_bad_lines='skip')
+            df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+            df['League'] = f.replace('.csv', '').replace('_', ' ').title()
+            
+            player_col = next((c for c in ['player', 'Player', 'name', 'Name'] if c in df.columns), None)
+            if player_col:
+                df['Match_Name'] = df[player_col].apply(remove_accents)
+                df = df.drop(columns=[player_col])
+                
+            dfs.append(df)
+        except Exception as e:
+            print(f"  ⚠️ Erreur sur {f} : {e}")
+
+if dfs:
+    df_leagues = pd.concat(dfs, ignore_index=True)
+else:
+    df_leagues = None
+
+# 4. Merge Final & Structured Reordering
+if df_sofifa is not None and df_leagues is not None:
+    print("⏳ Merging Datasets & Reordering Columns...")
+    df_final = pd.merge(df_sofifa, df_leagues, on="Match_Name", how="inner")
     
-    # Sauvegarde des données nettoyées au format CSV
-    output_path = "silver_data/sofifa_cleaned_silver.csv"
-    df_cleaned.to_csv(output_path, index=False)
+    if 'team' in df_final.columns: df_final = df_final.drop(columns=['team'])
     
-    print("\n✅ Data Cleaning Silver Terminé et enregistré !")
-    print(f"📁 Fichier sauvegardé : {output_path}")
-    print("\n--- Aperçu des données propres ---")
-    print(df_cleaned[['Player_Name', 'Primary_Position', 'Club', 'Height_cm', 'Weight_kg', 'Value_EUR', 'BMI']].head())
+    # KPIs
+    if 'goals' in df_final.columns and 'a' in df_final.columns and 'min' in df_final.columns:
+        df_final['Performance_Score'] = ((df_final['goals'] + df_final['a']) / (df_final['min'] + 1) * 90).round(2)
+
+    # Definition de l'ordre parfait des colonnes
+    # Definition de l'ordre parfait des colonnes (avec Age)
+    priority_cols = [
+        'ID', 'Player_Name', 'Age', 'Primary_Position', 'Player_Type', 'Positions', 'Club', 'League', 'Contract_End_Year',
+        'Height_cm', 'Weight_kg', 'BMI', 'Value_EUR', 'Value_Formatted', 'Wage_EUR', 'Wage_Formatted',
+        'Value_per_Overall', 'apps', 'min', 'goals', 'a', 'NPG', 'Performance_Score'
+    ]
+    
+    # Garder les colonnes de priorité au début, suivies du reste des statistiques
+    existing_priority = [c for c in priority_cols if c in df_final.columns]
+    remaining_cols = [c for c in df_final.columns if c not in existing_priority and c != 'Match_Name']
+    
+    df_final = df_final[existing_priority + remaining_cols]
+    df_final = df_final.dropna(how='all', axis=1)
+
+    # Save
+    final_out = os.path.join(SILVER_DIR, "final_players_silver.csv")
+    df_final.to_csv(final_out, index=False)
+    print(f"\n🚀 FINAL CLEANED SILVER DATASET CREATED : {final_out}")
+    print(f"📊 Premier joueur : {df_final['Player_Name'].iloc[0]} ({df_final['Club'].iloc[0]}) | Value: {df_final['Value_Formatted'].iloc[0]}")
