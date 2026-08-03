@@ -14,40 +14,18 @@ services:
       - minio_data:/data
     restart: always
 
-  # 2. PostgreSQL (Data Warehouse)
-  postgres:
-    image: postgres:15
-    container_name: postgres_dwh
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    restart: always
-
-  # 3. Pipeline (Scraper + Cleaning + Gold Load)
+  # 2. Pipeline (Scraper + Cleaning + Gold Load)
   pipeline:
     build:
       context: ..
       dockerfile: docker/Dockerfile
     container_name: pipeline_runner
     depends_on:
-      postgres:
-        condition: service_healthy
       minio:
         condition: service_started
     env_file:
       - ../.env
     environment:
-      - POSTGRES_HOST=postgres
       - MINIO_ENDPOINT=http://minio:9000
     volumes:
       - ../bronze_data:/app/bronze_data
@@ -58,6 +36,6 @@ services:
       python src/data_cleaning_silver.py &&
       python src/database_load_gold.py
       "
+
 volumes:
   minio_data:
-  postgres_data:

@@ -22,3 +22,7 @@ sqlalchemy
 
 # Web App & Visualization
 streamlit
+
+
+snowflake-connector-python
+snowflake-sqlalchemy
