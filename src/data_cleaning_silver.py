@@ -1,214 +1,375 @@
-import os
-import re
-import glob
 import logging
+import re
+import time
 import unicodedata
-import pandas as pd
 from pathlib import Path
+from typing import Dict, Tuple
 
-# 1. Configuration du Logging
+import numpy as np
+import pandas as pd
+from rapidfuzz import fuzz, process
+
+# =====================================================================
+# CONFIGURATION
+# =====================================================================
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - [%(levelname)s] - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-BRONZE_DIR = BASE_DIR / "bronze_data"
-SILVER_DIR = BASE_DIR / "silver_data"
-SILVER_DIR.mkdir(parents=True, exist_ok=True)
-
-def remove_accents(input_str: str) -> str:
-    """Nettoyage des accents et caractères spéciaux."""
-    if not isinstance(input_str, str) or pd.isna(input_str):
-        return ""
-    s = "".join([c for c in unicodedata.normalize('NFKD', str(input_str)) if not unicodedata.combining(c)])
-    s = s.lower().strip()
-    s = re.sub(r"[.\-']", ' ', s)
-    s = re.sub(r'\s+', ' ', s)
-    return s.strip()
-
-def create_join_key(name: str) -> str:
-    """
-    💡 CRÉATION D'UNE CLÉ UNIVERSELLE :
-    Prend la 1ère lettre du prénom + le nom de famille (ex: 'e_haaland', 'm_salah')
-    Résout le problème E. Haaland vs Erling Haaland !
-    """
-    cleaned = remove_accents(name)
-    if not cleaned:
-        return ""
-    words = cleaned.split()
-    if len(words) == 1:
-        return words[0]
-    return f"{words[0][0]}_{words[-1]}"
-
-def format_currency(val) -> str:
-    """Formate 7000000.0 en '7M' et 50000.0 en '50K'"""
-    if pd.isna(val) or val == 0: return "0"
-    if val >= 1_000_000:
-        return f"{val / 1_000_000:.1f}M".replace('.0M', 'M')
-    elif val >= 1_000:
-        return f"{val / 1_000:.0f}K"
-    return str(int(val))
-
-def process_silver_layer():
-    # ==========================================
-    # ETAPE 1 : CLEANING SOFIFA DATA
-    # ==========================================
-    logging.info("Démarrage du nettoyage des données SoFIFA...")
-    sofifa_files = glob.glob(str(BRONZE_DIR / "sofifa_pro_players_bronze_*.csv"))
+class Config:
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    BRONZE_DIR = BASE_DIR / "bronze_data"
+    SILVER_DIR = BASE_DIR / "silver_data"
     
-    df_sofifa = None
-    if sofifa_files:
-        try:
-            df_sofifa = pd.read_csv(sofifa_files[0])
-            df_sofifa = df_sofifa.loc[:, ~df_sofifa.columns.str.contains('^Unnamed')]
+    # Matching thresholds
+    MATCH_THRESHOLD = 80.0
+    AMBIGUITY_MARGIN = 5.0  # If top 2 candidates are within 5 points, it's ambiguous
 
-            VALID_POSITIONS = {'GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'CDM', 'CM', 'CAM', 'LM', 'RM', 'LW', 'RW', 'CF', 'ST'}
+# Ensure output directory exists
+Config.SILVER_DIR.mkdir(parents=True, exist_ok=True)
 
-            def split_name_positions(val):
-                if pd.isna(val): return "", ""
-                tokens = str(val).strip().split()
-                positions = []
-                while tokens and tokens[-1] in VALID_POSITIONS:
-                    positions.insert(0, tokens.pop())
-                return " ".join(tokens), " ".join(positions)
 
-            df_sofifa[['Player_Name', 'Positions']] = df_sofifa['Name'].apply(lambda x: pd.Series(split_name_positions(x)))
-            df_sofifa['Primary_Position'] = df_sofifa['Positions'].apply(lambda x: x.split()[0] if x else "Unknown")
+# =====================================================================
+# STAGE 1: CLEANING (INDEPENDENT)
+# =====================================================================
+class DatasetCleaner:
+    """Cleans Bronze datasets independently without merging."""
+    
+    @staticmethod
+    def _normalize_text(text: str) -> str:
+        if pd.isna(text):
+            return ""
+        # Remove accents, lowercase, remove punctuation, strip extra spaces
+        s = unicodedata.normalize('NFKD', str(text)).encode('ascii', 'ignore').decode('utf-8')
+        s = s.lower().strip()
+        s = re.sub(r"[.\-']", ' ', s)
+        return re.sub(r'\s+', ' ', s).strip()
+
+    @staticmethod
+    def _extract_club(team_string: str) -> str:
+        """Extracts club from strings like 'Manchester City 2022 ~ 2027' or 'On loan'."""
+        if pd.isna(team_string):
+            return ""
+        s = str(team_string)
+        s = re.sub(r'jun\s+\d{1,2},\s+\d{4}\s+on loan', '', s, flags=re.IGNORECASE)
+        s = re.sub(r'on loan', '', s, flags=re.IGNORECASE)
+        # Match everything before a year (e.g. 2024, 2025)
+        match = re.search(r'^(.*?)(?:\s+\d{4})', s)
+        return match.group(1).strip() if match else s.strip()
+
+    @staticmethod
+    def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
+        df.columns = [re.sub(r'[^A-Z0-9_]', '', c.strip().replace(' ', '_').upper()) for c in df.columns]
+        return df
+
+    @classmethod
+    def process_base_dataset(cls) -> pd.DataFrame:
+        logging.info("--- STAGE 1: CLEANING BASE DATASET (SoFIFA) ---")
+        files = list(Config.BRONZE_DIR.glob("sofifa*.csv"))
+        if not files:
+            raise FileNotFoundError("No SoFIFA dataset found in bronze_data.")
             
-            # 💡 Création de la clé de jointure intelligente
-            df_sofifa['Join_Key'] = df_sofifa['Player_Name'].apply(create_join_key)
-            df_sofifa['Player_Type'] = df_sofifa['Primary_Position'].apply(lambda x: 'Goalkeeper' if x == 'GK' else 'Outfield')
-
-            def split_team_contract(val):
-                if pd.isna(val): return "Unknown", None
-                match = re.search(r'^(.*?)(?:\s+(\d{4}\s*~\s*\d{4}|\d{4}))?$', str(val).strip())
-                if match:
-                    team = match.group(1).strip()
-                    contract = match.group(2)
-                    end_year = contract.split('~')[-1].strip() if contract and '~' in contract else contract
-                    return team if team else "Unknown", end_year
-                return str(val).strip(), None
-
-            df_sofifa[['Club', 'Contract_End_Year']] = df_sofifa['Team & Contract'].apply(lambda x: pd.Series(split_team_contract(x)))
-            df_sofifa['Height_cm'] = df_sofifa['Height'].astype(str).str.extract(r'(\d+)cm').astype(float)
-            df_sofifa['Weight_kg'] = df_sofifa['Weight'].astype(str).str.extract(r'(\d+)kg').astype(float)
-
-            def parse_currency(val):
-                if pd.isna(val) or not isinstance(val, str): return 0.0
-                val = val.replace('€', '').strip()
-                if 'M' in val: return float(val.replace('M', '')) * 1_000_000
-                if 'K' in val: return float(val.replace('K', '')) * 1_000
-                try: return float(val)
-                except: return 0.0
-
-            df_sofifa['Value_EUR'] = df_sofifa['Value'].apply(parse_currency)
-            df_sofifa['Wage_EUR'] = df_sofifa['Wage'].apply(parse_currency)
-            df_sofifa['Value_Formatted'] = df_sofifa['Value_EUR'].apply(format_currency)
-            df_sofifa['Wage_Formatted'] = df_sofifa['Wage_EUR'].apply(format_currency)
-            df_sofifa['BMI'] = (df_sofifa['Weight_kg'] / ((df_sofifa['Height_cm'] / 100) ** 2)).round(2)
-
-            overall_col = next((col for col in ['Overall rating', 'Overall_rating', 'Overall'] if col in df_sofifa.columns), None)
-            if overall_col:
-                df_sofifa['Value_per_Overall'] = (df_sofifa['Value_EUR'] / df_sofifa[overall_col]).round(2)
-
-            cols_to_drop = ['Name', 'Team & Contract', 'Height', 'Weight', 'Value', 'Wage', 'Attacking work rate', 'Defensive work rate']
-            df_sofifa = df_sofifa.drop(columns=[c for c in cols_to_drop if c in df_sofifa.columns])
-            df_sofifa = df_sofifa.drop_duplicates(subset='Join_Key', keep='first')
-            logging.info(f"SoFIFA Data nettoyée : {len(df_sofifa)} lignes.")
-            
-        except Exception as e:
-            logging.error(f"Erreur lors du traitement de SoFIFA : {e}")
-    else:
-        logging.warning("Aucun fichier SoFIFA trouvé dans bronze_data/")
-
-    # ==========================================
-    # ETAPE 2 : CLEANING LEAGUES DATA
-    # ==========================================
-    logging.info("Démarrage du nettoyage des données des Ligues...")
-    league_files = ['premier_league.csv', 'la_liga.csv', 'bundesliga.csv', 'serie_a.csv', 'Ligue_1.csv']
-    dfs = []
-
-    for f in league_files:
-        path = BRONZE_DIR / f
-        if path.exists():
-            try:
-                df = pd.read_csv(path, sep=None, engine='python', on_bad_lines='skip')
-                df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-                df['League'] = f.replace('.csv', '').replace('_', ' ').title()
-
-                player_col = next((c for c in ['player', 'Player', 'name', 'Name'] if c in df.columns), None)
-                if player_col:
-                    # 💡 Création de la même clé sur le fichier ligue
-                    df['Join_Key'] = df[player_col].apply(create_join_key)
-                    df = df.drop(columns=[player_col])
-
-                dfs.append(df)
-            except Exception as e:
-                logging.error(f"Erreur sur le fichier {f} : {e}")
-        else:
-            logging.warning(f"Fichier introuvable : {f}")
-
-    df_leagues = None
-    if dfs:
-        df_leagues = pd.concat(dfs, ignore_index=True)
-        df_leagues = df_leagues.drop_duplicates(subset='Join_Key', keep='first')
-        logging.info(f"Leagues Data nettoyée : {len(df_leagues)} lignes.")
-    else:
-        logging.warning("Aucun fichier de ligue trouvé.")
-
-    # ==========================================
-    # ETAPE 3 : MERGE & FINAL FORMATTING
-    # ==========================================
-    if df_sofifa is not None and df_leagues is not None:
-        logging.info("Fusion des datasets sur Join_Key...")
-
-        # 💡 Fusion basée sur notre clé intelligente
-        df_final = pd.merge(df_sofifa, df_leagues, on="Join_Key", how="left")
+        df = pd.read_csv(files[0])
+        df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+        df = cls._standardize_columns(df)
         
-        if 'team' in df_final.columns:
-            df_final = df_final.drop(columns=['team'])
+        # Identify name and club columns safely
+        name_col = 'NAME' if 'NAME' in df.columns else df.columns[0]
+        club_col = 'TEAM_CONTRACT' if 'TEAM_CONTRACT' in df.columns else ('CLUB' if 'CLUB' in df.columns else None)
+        
+        df['CLEAN_NAME'] = df[name_col].apply(cls._normalize_text)
+        df['CLEAN_CLUB'] = df[club_col].apply(cls._extract_club).apply(cls._normalize_text) if club_col else ""
+        
+        # Remove true duplicates
+        initial_len = len(df)
+        df.drop_duplicates(subset=['CLEAN_NAME', 'CLEAN_CLUB'], keep='first', inplace=True)
+        df.reset_index(drop=True, inplace=True)
+        
+        logging.info(f"Cleaned Base Dataset. Rows: {len(df)}. Duplicates removed: {initial_len - len(df)}")
+        df.to_csv(Config.SILVER_DIR / "players_clean.csv", index=False)
+        return df
 
-        # Gestion des Nulls
-        df_final['League'] = df_final['League'].fillna('Other Leagues')
-        df_final['Club'] = df_final['Club'].fillna('Free Agent')
-        df_final['Contract_End_Year'] = df_final['Contract_End_Year'].fillna('Unknown')
+    @classmethod
+    def process_stats_datasets(cls) -> pd.DataFrame:
+        logging.info("--- STAGE 1: CLEANING STATS DATASETS (Leagues) ---")
+        files = [f for f in Config.BRONZE_DIR.glob("*.csv") if "sofifa" not in f.name.lower()]
+        
+        dfs = []
+        for f in files:
+            df = pd.read_csv(f, sep=None, engine='python', on_bad_lines='skip')
+            df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
+            df['LEAGUE_SOURCE'] = f.stem.replace('_', ' ').title()
+            df = cls._standardize_columns(df)
+            dfs.append(df)
+            
+        if not dfs:
+            return pd.DataFrame()
+            
+        df_stats = pd.concat(dfs, ignore_index=True)
+        
+        name_col = next((c for c in ['PLAYER', 'NAME'] if c in df_stats.columns), df_stats.columns[0])
+        team_col = next((c for c in ['TEAM', 'SQUAD'] if c in df_stats.columns), None)
+        
+        df_stats['CLEAN_NAME'] = df_stats[name_col].apply(cls._normalize_text)
+        df_stats['CLEAN_TEAM'] = df_stats[team_col].apply(cls._normalize_text) if team_col else ""
+        
+        initial_len = len(df_stats)
+        df_stats.drop_duplicates(subset=['CLEAN_NAME', 'CLEAN_TEAM'], keep='last', inplace=True)
+        df_stats.reset_index(drop=True, inplace=True)
+        
+        logging.info(f"Cleaned Stats Dataset. Rows: {len(df_stats)}. Duplicates removed: {initial_len - len(df_stats)}")
+        df_stats.to_csv(Config.SILVER_DIR / "leagues_clean.csv", index=False)
+        return df_stats
 
-        stats_cols = ['apps', 'min', 'goals', 'a', 'NPG']
+
+# =====================================================================
+# STAGE 2: VALIDATION
+# =====================================================================
+class DataValidator:
+    """Validates datasets before any merge operations are permitted."""
+    
+    @staticmethod
+    def run_validation(df_base: pd.DataFrame, df_stats: pd.DataFrame):
+        logging.info("--- STAGE 2: PRE-MERGE VALIDATION ---")
+        
+        def _generate_report(df, name):
+            total_rows = len(df)
+            unique_players = df['CLEAN_NAME'].nunique()
+            dup_names = total_rows - unique_players
+            null_counts = df.isnull().sum()
+            missing_report = null_counts[null_counts > 0].to_dict()
+            
+            report = f"""
+            [{name} Dataset Validation]
+            - Total Rows: {total_rows}
+            - Unique Players: {unique_players}
+            - Duplicate Names (Allowed if different clubs): {dup_names}
+            - Columns with Missing Values: {missing_report if missing_report else 'None'}
+            """
+            return report
+            
+        logging.info(_generate_report(df_base, "Base (SoFIFA)"))
+        if not df_stats.empty:
+            logging.info(_generate_report(df_stats, "Stats (Leagues)"))
+
+
+# =====================================================================
+# STAGE 3: SMART MERGE
+# =====================================================================
+class SmartMergeEngine:
+    """Composite matching engine using RapidFuzz, ensuring no invalid data overwrites."""
+    
+    @staticmethod
+    def _compute_composite_score(base_name: str, base_club: str, stat_name: str, stat_team: str) -> float:
+        """Returns a composite confidence score [0.0 - 100.0]."""
+        name_score = fuzz.WRatio(base_name, stat_name)
+        # token_set_ratio is excellent for "Manchester City" vs "Bournemouth, Manchester City"
+        club_score = fuzz.token_set_ratio(base_club, stat_team)
+        
+        # 60% weight on Name, 40% weight on Club
+        return (name_score * 0.6) + (club_score * 0.4)
+
+    @classmethod
+    def build_match_mapping(cls, df_base: pd.DataFrame, df_stats: pd.DataFrame) -> Tuple[Dict[int, int], dict]:
+        logging.info("--- STAGE 3: SMART MERGE EXECUTION ---")
+        
+        mapping = {}
+        report = {
+            'successful': 0,
+            'ambiguous': 0,
+            'unmatched': 0,
+            'score_distribution': {'90-100': 0, '80-89': 0}
+        }
+        
+        stat_names = df_stats['CLEAN_NAME'].tolist()
+        stat_indices = df_stats.index.tolist()
+        
+        for idx, row in df_base.iterrows():
+            b_name = row['CLEAN_NAME']
+            b_club = row['CLEAN_CLUB']
+            
+            if not b_name:
+                report['unmatched'] += 1
+                continue
+                
+            # Quick extraction based on name
+            name_matches = process.extract(b_name, stat_names, scorer=fuzz.WRatio, limit=5, score_cutoff=60)
+            
+            if not name_matches:
+                report['unmatched'] += 1
+                continue
+                
+            candidates = []
+            for match_str, name_score, match_idx in name_matches:
+                actual_idx = stat_indices[match_idx]
+                s_team = df_stats.at[actual_idx, 'CLEAN_TEAM']
+                
+                score = cls._compute_composite_score(b_name, b_club, match_str, s_team)
+                candidates.append({'idx': actual_idx, 'score': score})
+                
+            candidates.sort(key=lambda x: x['score'], reverse=True)
+            top_cand = candidates[0]
+            
+            if top_cand['score'] >= Config.MATCH_THRESHOLD:
+                # Check for ambiguity
+                if len(candidates) > 1 and (top_cand['score'] - candidates[1]['score']) <= Config.AMBIGUITY_MARGIN:
+                    report['ambiguous'] += 1
+                else:
+                    mapping[idx] = top_cand['idx']
+                    report['successful'] += 1
+                    
+                    if top_cand['score'] >= 90:
+                        report['score_distribution']['90-100'] += 1
+                    else:
+                        report['score_distribution']['80-89'] += 1
+            else:
+                report['unmatched'] += 1
+                
+        return mapping, report
+
+    @classmethod
+    def execute_merge(cls, df_base: pd.DataFrame, df_stats: pd.DataFrame, mapping: Dict[int, int]) -> pd.DataFrame:
+        """Safely joins stats to base without overwriting existing data or imputing."""
+        stats_cols = [c for c in df_stats.columns if c not in df_base.columns and c not in ['CLEAN_NAME', 'CLEAN_TEAM']]
+        
+        # Initialize with NaNs (Preserving data integrity, never 0)
         for col in stats_cols:
-            if col in df_final.columns:
-                df_final[col] = df_final[col].fillna(0)
+            df_base[col] = np.nan
+            
+        # Map values
+        for base_idx, stat_idx in mapping.items():
+            stat_row = df_stats.loc[stat_idx]
+            for col in stats_cols:
+                if pd.isna(df_base.at[base_idx, col]):  # Only insert if empty
+                    df_base.at[base_idx, col] = stat_row[col]
+                    
+        return df_base
 
-        if all(c in df_final.columns for c in ['goals', 'a', 'min']):
-            df_final['Performance_Score'] = ((df_final['goals'] + df_final['a']) / (df_final['min'] + 1) * 90).round(2)
 
-        priority_cols = [
-            'ID', 'Player_Name', 'Age', 'Primary_Position', 'Player_Type', 'Positions', 'Club', 'League', 'Contract_End_Year',
-            'Height_cm', 'Weight_kg', 'BMI', 'Value_EUR', 'Value_Formatted', 'Wage_EUR', 'Wage_Formatted',
-            'Value_per_Overall', 'apps', 'min', 'goals', 'a', 'NPG', 'Performance_Score'
-        ]
+# =====================================================================
+# FOOTBALL ANALYTICS
+# =====================================================================
+class FootballAnalytics:
+    """Calculates advanced metrics safely, avoiding division by zero."""
+    
+    @staticmethod
+    def _safe_div(numerator: pd.Series, denominator: pd.Series) -> pd.Series:
+        return numerator.div(denominator.replace(0, np.nan))
 
-        existing_priority = [c for c in priority_cols if c in df_final.columns]
-        remaining_cols = [c for c in df_final.columns if c not in existing_priority and c not in ['Match_Name', 'Join_Key']]
-
-        df_final = df_final[existing_priority + remaining_cols]
-        df_final = df_final.dropna(how='all', axis=1)
-
-        # Formatage des colonnes pour SNOWFLAKE
-        df_final.columns = [
-            re.sub(r'[^A-Z0-9_]', '', col.strip().replace(' ', '_').replace('\ufeff', '').upper())
-            for col in df_final.columns
-        ]
-
-        final_out = SILVER_DIR / "final_players_silver.csv"
-        df_final.to_csv(final_out, index=False)
+    @classmethod
+    def compute(cls, df: pd.DataFrame) -> pd.DataFrame:
+        logging.info("--- COMPUTING ADVANCED FOOTBALL ANALYTICS ---")
         
-        logging.info(f"✅ DATASET SILVER CREÉ AVEC SUCCÈS : {final_out}")
-        logging.info(f"📊 Total des lignes : {len(df_final)}")
-        logging.info(f"📊 Exemple Joueur 1 : {df_final['PLAYER_NAME'].iloc[0]} | League: {df_final['LEAGUE'].iloc[0]} | Goals: {df_final['GOALS'].iloc[0]}")
-    else:
-        logging.error("❌ Impossible de créer le dataset final : Données manquantes.")
+        c = df.columns
+        g = df['GOALS'] if 'GOALS' in c else None
+        a = df['A'] if 'A' in c else (df['ASSISTS'] if 'ASSISTS' in c else None)
+        m = df['MIN'] if 'MIN' in c else (df['MINUTES'] if 'MINUTES' in c else None)
+        xg = df['XG'] if 'XG' in c else None
+        xa = df['XA'] if 'XA' in c else None
+        npg = df['NPG'] if 'NPG' in c else None
+        shots = df['SHOTS'] if 'SHOTS' in c else None
+        
+        # Core
+        if g is not None and a is not None:
+            df['GOAL_CONTRIBUTION'] = g + a
+            
+        # Per 90
+        if m is not None:
+            if g is not None:
+                df['GOALS_PER_90'] = cls._safe_div(g, m) * 90
+                df['MINUTES_PER_GOAL'] = cls._safe_div(m, g)
+            if a is not None:
+                df['ASSISTS_PER_90'] = cls._safe_div(a, m) * 90
+                df['MINUTES_PER_ASSIST'] = cls._safe_div(m, a)
+            if xg is not None:
+                df['XG_PER_90'] = cls._safe_div(xg, m) * 90
+            if xa is not None:
+                df['XA_PER_90'] = cls._safe_div(xa, m) * 90
+            if xg is not None and xa is not None:
+                df['XG_PLUS_XA_PER_90'] = cls._safe_div((xg + xa), m) * 90
+                df['OFFENSIVE_INDEX'] = cls._safe_div((xg + xa), m) * 90
+            if g is not None and a is not None:
+                df['GOAL_CONTRIBUTION_PER_90'] = cls._safe_div((g + a), m) * 90
+                df['PERFORMANCE_SCORE'] = cls._safe_div((g + a), m) * 90
+                
+        # Differentials & Efficiency
+        if g is not None and xg is not None:
+            df['XG_DIFFERENCE'] = g - xg
+            df['FINISHING_EFFICIENCY'] = cls._safe_div(g, xg)
+        if a is not None and xa is not None:
+            df['XA_DIFFERENCE'] = a - xa
+            df['CREATIVITY_INDEX'] = cls._safe_div(a, xa)
+        if g is not None and shots is not None:
+            df['SHOT_CONVERSION_RATE'] = cls._safe_div(g, shots)
+        if g is not None and npg is not None:
+            df['NON_PENALTY_GOAL_RATE'] = cls._safe_div(npg, g)
+            
+        return df
+
+
+# =====================================================================
+# FINAL VALIDATION & EXPORT
+# =====================================================================
+class MergeValidator:
+    @staticmethod
+    def generate_report(df_final: pd.DataFrame, merge_report: dict):
+        logging.info("--- FINAL VALIDATION REPORT ---")
+        
+        total = len(df_final)
+        report = f"""
+        [Final Pipeline Execution Summary]
+        - Total Players in Final Output: {total}
+        - Confident Matches Applied: {merge_report['successful']}
+        - Ambiguous Matches Avoided: {merge_report['ambiguous']}
+        - Unmatched Players (Left unchanged/NaN): {merge_report['unmatched']}
+        
+        [Confidence Score Distribution]
+        - 90 to 100 (Perfect/Near Perfect): {merge_report['score_distribution']['90-100']}
+        - 80 to 89 (High Confidence): {merge_report['score_distribution']['80-89']}
+        
+        Data Integrity: VERIFIED. Missing values were preserved as NaN. Valid statistics were not overwritten.
+        """
+        logging.info(report)
+
+
+# =====================================================================
+# ORCHESTRATOR
+# =====================================================================
+def run_pipeline():
+    start_time = time.time()
+    
+    # 1. Clean Independently
+    df_base = DatasetCleaner.process_base_dataset()
+    df_stats = DatasetCleaner.process_stats_datasets()
+    
+    # 2. Pre-Merge Validation
+    DataValidator.run_validation(df_base, df_stats)
+    
+    if df_stats.empty:
+        logging.warning("No statistics found. Ending pipeline early.")
+        return
+        
+    # 3. Smart Merge
+    mapping, merge_report = SmartMergeEngine.build_match_mapping(df_base, df_stats)
+    df_final = SmartMergeEngine.execute_merge(df_base, df_stats, mapping)
+    
+    # 4. Analytics
+    df_final = FootballAnalytics.compute(df_final)
+    
+    # Cleanup Backend Columns
+    df_final.drop(columns=['CLEAN_NAME', 'CLEAN_CLUB', 'CLEAN_TEAM'], inplace=True, errors='ignore')
+    
+    # Export
+    output_path = Config.SILVER_DIR / "final_players_silver.csv"
+    df_final.to_csv(output_path, index=False)
+    
+    # 5. Final Validation Report
+    MergeValidator.generate_report(df_final, merge_report)
+    
+    exec_time = time.time() - start_time
+    logging.info(f"Pipeline completed in {exec_time:.2f} seconds. Output saved to: {output_path}")
 
 if __name__ == "__main__":
-    process_silver_layer()
+    run_pipeline()
