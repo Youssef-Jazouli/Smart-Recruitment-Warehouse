@@ -1,41 +1,22 @@
-services:
-  # 1. MinIO (Data Lake)
-  minio:
-    image: minio/minio:latest
-    container_name: minio_storage
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio_data:/data
-    restart: always
+version: '3.8'
 
-  # 2. Pipeline (Scraper + Cleaning + Gold Load)
-  pipeline:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    container_name: pipeline_runner
-    depends_on:
-      minio:
-        condition: service_started
-    env_file:
-      - ../.env
+services:
+  postgres:
+    image: postgres:16
+    container_name: football_postgres
     environment:
-      - MINIO_ENDPOINT=http://minio:9000
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: football_db
+    ports:
+      - "5432:5432"
     volumes:
-      - ../bronze_data:/app/bronze_data
-      - ../silver_data:/app/silver_data
-    command: >
-      sh -c "
-      python src/upload_bronze_to_minio.py &&
-      python src/data_cleaning_silver.py &&
-      python src/database_load_gold.py
-      "
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d football_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  minio_data:
+  pg_data:

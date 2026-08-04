@@ -1,28 +1,4 @@
-# Web Scraping & Automation
-selenium
-webdriver-manager
-undetected-chromedriver
-beautifulsoup4
-html5lib
-lxml
-requests
-
-# Data Processing & Analysis
 pandas
-numpy
-pyarrow
-
-# Environment & Cloud Storage (MinIO / S3)
-python-dotenv
-boto3
-
-# Data Warehouse & Database
-psycopg2-binary
 sqlalchemy
-
-# Web App & Visualization
-streamlit
-
-
-snowflake-connector-python
-snowflake-sqlalchemy
+psycopg2-binary
+python-dotenv
