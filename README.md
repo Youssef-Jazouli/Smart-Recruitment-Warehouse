@@ -1,98 +1,101 @@
 # ⚽ Smart Recruitment Warehouse
 
-A data engineering pipeline that ingests football player statistics and FIFA/Sofifa attributes, cleans them, and builds a **Bronze → Silver → Gold** layered architecture using **Pandas** and **PostgreSQL**, orchestrated with **Docker**.
+---
 
-## 📌 Overview
+# 1. Nom du projet
 
-This project merges player performance data from Europe's top 5 leagues (Bundesliga, La Liga, Ligue 1, Premier League, Serie A) with Sofifa player attribute data, cleans and standardizes it, then models it into a **Star Schema** for analytics.
+**Nom du projet :** Smart Recruitment Warehouse
 
-## 🏗️ Architecture
+---
 
-```
-Bronze (raw CSVs) → Silver (cleaned data) → Gold (star schema)
-```
+# 2. Présentation du projet
 
-- **Bronze**: Raw, untouched CSV files
-- **Silver**: Cleaned, standardized, deduplicated tables in PostgreSQL
-- **Gold**: Star schema (fact + dimension tables) ready for BI/analytics
+Ce projet est une analyse de données qui permet d'ingérer, nettoyer et modéliser les statistiques de joueurs de football professionnels issues des cinq grands championnats européens (Bundesliga, La Liga, Ligue 1, Premier League, Serie A), enrichies avec les attributs FIFA/Sofifa.
 
-## 📁 Project Structure
+Il s'adresse principalement aux recruteurs sportifs, analystes de données et personnes souhaitant exploiter des statistiques de joueurs pour de l'analyse décisionnelle (BI).
 
-```
-football_pipeline/
-│
-├── docker-compose.yml
-├── requirements.txt
-├── .env
-├── main.py                     # orchestrates the whole pipeline
-│
-├── bronze_data/                # raw CSVs
-│   ├── bundesliga.csv
-│   ├── la_liga.csv
-│   ├── Ligue_1.csv
-│   ├── premier_league.csv
-│   ├── serie_a.csv
-│   └── sofifa_pro_players_bronze_20260723_143815.csv
-│
-├── config/
-│   └── db_config.py            # DB connection & env config
-│
-├── extract/
-│   ├── extract_leagues.py      # reads & merges the 5 league CSVs
-│   └── extract_sofifa.py       # reads the sofifa CSV
-│
-├── transform/
-│   ├── clean_league_stats.py   # cleaning/renaming league stats
-│   └── clean_player_attrs.py   # cleaning/renaming sofifa attributes
-│
-├── load/
-│   ├── load_silver.py          # writes cleaned tables to silver schema
-│   └── load_gold.py            # writes star schema to gold schema
-│
-└── gold/
-    └── build_star_schema.py    # builds dim_league, dim_team, dim_player, fact table
-```
+Son objectif principal est de transformer des données brutes hétérogènes en un entrepôt de données structuré (schéma en étoile), prêt à être interrogé pour identifier et comparer des joueurs selon leurs performances et leurs caractéristiques FIFA.
 
-## ⭐ Star Schema (Gold Layer)
+---
 
-| Table | Type | Description |
-|---|---|---|
-| `dim_league` | Dimension | League names |
-| `dim_team` | Dimension | Team names |
-| `dim_player` | Dimension | Player names |
-| `fact_player_performance` | Fact | Stats + FIFA attributes per player per league |
+# 3. Problématique
 
-## 🛠️ Tech Stack
+Le problème identifié est que les statistiques de joueurs et les attributs FIFA/Sofifa proviennent de sources séparées, dans des formats bruts non standardisés (CSV par championnat), rendant difficile toute analyse croisée fiable (noms différents selon les sources, doublons, formats de valeurs monétaires incohérents, etc.).
 
-- **Python** (Pandas, SQLAlchemy)
-- **PostgreSQL** (Docker container)
-- **Docker Compose**
+La solution proposée permet de centraliser ces données dans un pipeline ETL automatisé qui les nettoie, les standardise puis les organise en couches Bronze, Silver et Gold, afin d'obtenir un schéma en étoile exploitable directement pour des requêtes analytiques (ex : classement des meilleurs buteurs avec leur note FIFA et leur valeur marchande).
 
-## 🚀 Getting Started
+---
 
-### Prerequisites
-- Docker & Docker Compose
-- Python 3.9+
+# 4. Fonctionnalités principales
 
-### 1. Clone the repo
+- Extraire et fusionner les statistiques des cinq championnats (Bundesliga, La Liga, Ligue 1, Premier League, Serie A)
+- Extraire les attributs de joueurs depuis le jeu de données Sofifa
+- Nettoyer et standardiser les données (typage, dédoublonnage, suppression des espaces/guillemets superflus, parsing des valeurs monétaires)
+- Charger les tables nettoyées dans le schéma Silver de PostgreSQL
+- Construire un schéma en étoile (dimensions + table de faits) dans le schéma Gold
+- Exécuter l'ensemble du pipeline ETL en une seule commande via `main.py`
+
+---
+
+# 5. Technologies utilisées
+
+| Technologie | Utilisation dans le projet |
+|-------------|----------------------------|
+| Python | Développement de l'ensemble du pipeline ETL (extraction, transformation, chargement) |
+| Pandas | Nettoyage, transformation et manipulation des données tabulaires |
+| SQLAlchemy | Connexion et écriture des données dans PostgreSQL |
+| PostgreSQL | Stockage des données dans les schémas Silver et Gold |
+| Docker & Docker Compose | Conteneurisation et orchestration de la base de données PostgreSQL |
+
+### Phrase type
+
+> Nous avons utilisé **Pandas** pour nettoyer, dédupliquer et standardiser les données brutes issues des fichiers CSV avant leur chargement en base.
+
+---
+
+# 6. Installation et lancement
+
+## 6.1 Prérequis
+
+Pour utiliser ce projet, vous devez disposer de :
+
+- Docker et Docker Compose
+- Python 3.9 ou supérieur
+- pip
+- Git
+- Un client PostgreSQL (optionnel, pour vérifier les données manuellement)
+
+---
+
+## 6.2 Cloner le dépôt
+
 ```bash
 git clone https://github.com/<your-username>/football_pipeline.git
+```
+
+---
+
+## 6.3 Ouvrir le dossier
+
+```bash
 cd football_pipeline
 ```
 
-### 2. Start PostgreSQL
-```bash
-docker compose up -d
-```
+---
 
-### 3. Install dependencies
+## 6.4 Installer les dépendances
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
-Create a `.env` file:
-```
+---
+
+## 6.5 Variables d'environnement
+
+Créer le fichier `.env`.
+
+```env
 DB_USER=admin
 DB_PASSWORD=admin123
 DB_HOST=localhost
@@ -101,28 +104,44 @@ DB_NAME=football_db
 BRONZE_DIR=bronze_data
 ```
 
-### 5. Run the pipeline
+---
+
+## 6.6 Lancer le projet
+
+Démarrer PostgreSQL avec Docker :
+
+```bash
+docker compose up -d
+```
+
+Puis exécuter le pipeline complet :
+
 ```bash
 python main.py
 ```
 
-This single command runs the full ETL: extraction → cleaning → silver load → gold star schema build → gold load.
+Cette commande unique exécute l'ensemble du processus ETL : extraction → nettoyage → chargement Silver → construction du schéma en étoile → chargement Gold.
 
-## ✅ Verifying the Data
+---
 
-Connect to the database:
+## 6.7 Vérifier le projet
+
+Après le lancement, se connecter à la base de données pour vérifier les résultats :
+
 ```bash
 docker exec -it football_postgres psql -U admin -d football_db
 ```
 
-Check schemas and tables:
+Vérifier les schémas et les tables :
+
 ```sql
 \dn
 \dt silver.*
 \dt gold.*
 ```
 
-Sample query — top scorers with team/league names:
+Exemple de requête — meilleurs buteurs avec équipe/championnat :
+
 ```sql
 SELECT 
     p.player_name,
@@ -140,16 +159,155 @@ ORDER BY f.goals DESC
 LIMIT 15;
 ```
 
-## 📊 Data Sources
+### Point de vigilance
 
-- League player statistics: Bundesliga, La Liga, Ligue 1, Premier League, Serie A
-- Player attributes: Sofifa pro players dataset
+- Tester toutes les commandes
+- Vérifier les chemins
+- Ne jamais publier :
+  - mots de passe
+  - clés API
+  - tokens
+  - identifiants
 
-## 🔍 Notes
+---
 
-- Player enrichment (FIFA attributes) is matched via cleaned player name; some mismatches may occur due to accents/nicknames.
-- All data cleaning (type casting, deduplication, whitespace/quote stripping, money parsing) is handled in the `transform/` layer.
+# 7. Architecture des données
 
-## 📄 License
+## Architecture générale
+
+```
+Bronze (CSV bruts) → Silver (données nettoyées) → Gold (schéma en étoile)
+```
+
+- **Bronze** : fichiers CSV bruts, non modifiés
+- **Silver** : tables nettoyées, standardisées et dédupliquées dans PostgreSQL
+- **Gold** : schéma en étoile (table de faits + dimensions) prêt pour l'analyse BI
+
+## Structure du projet
+
+```
+football_pipeline/
+│
+├── docker-compose.yml
+├── requirements.txt
+├── .env
+├── main.py                     # orchestre l'ensemble du pipeline
+│
+├── bronze_data/                # CSV bruts
+│   ├── bundesliga.csv
+│   ├── la_liga.csv
+│   ├── Ligue_1.csv
+│   ├── premier_league.csv
+│   ├── serie_a.csv
+│   └── sofifa_pro_players_bronze_20260723_143815.csv
+│
+├── config/
+│   └── db_config.py            # connexion DB et configuration env
+│
+├── extract/
+│   ├── extract_leagues.py      # lit et fusionne les 5 CSV de championnats
+│   └── extract_sofifa.py       # lit le CSV Sofifa
+│
+├── transform/
+│   ├── clean_league_stats.py   # nettoyage/renommage des stats de championnats
+│   └── clean_player_attrs.py   # nettoyage/renommage des attributs Sofifa
+│
+├── load/
+│   ├── load_silver.py          # écrit les tables nettoyées dans le schéma silver
+│   └── load_gold.py            # écrit le schéma en étoile dans le schéma gold
+│
+└── gold/
+    └── build_star_schema.py    # construit dim_league, dim_team, dim_player, table de faits
+```
+
+## Schéma en étoile (couche Gold)
+
+| Table | Type | Description |
+|-------|------|-------------|
+| dim_league | Dimension | Noms des championnats |
+| dim_team | Dimension | Noms des équipes |
+| dim_player | Dimension | Noms des joueurs |
+| fact_player_performance | Fait | Statistiques + attributs FIFA par joueur et par championnat |
+
+---
+
+# 8. Contribution personnelle
+
+Ma contribution principale a porté sur la conception et le développement de l'ensemble du pipeline ETL, depuis l'extraction des données brutes jusqu'à la construction du schéma en étoile.
+
+J'ai également travaillé sur la logique de nettoyage et de standardisation des données (typage, dédoublonnage, suppression des espaces/guillemets, parsing des valeurs monétaires) dans la couche `transform/`.
+
+J'ai été responsable de la configuration de l'environnement Docker/PostgreSQL, ainsi que de la construction du schéma en étoile (dimensions et table de faits) dans la couche Gold.
+
+---
+
+# 9. Difficultés rencontrées
+
+## Difficulté 1 : Correspondance des noms de joueurs entre sources
+
+### Problème rencontré
+
+Les noms de joueurs présents dans les fichiers de statistiques de championnats ne correspondaient pas toujours exactement aux noms utilisés dans le jeu de données Sofifa, notamment à cause des accents et des surnoms.
+
+### Recherches / Tests
+
+J'ai testé plusieurs approches de nettoyage de chaînes de caractères (normalisation des accents, suppression des espaces superflus, mise en minuscule) pour maximiser le taux de correspondance entre les deux sources.
+
+### Solution
+
+J'ai mis en place une étape de nettoyage systématique des noms avant la jointure, réduisant significativement le nombre de mismatches, bien que certains cas restent non résolus.
+
+### Ce que j'ai appris
+
+Cette difficulté m'a permis d'apprendre l'importance de la standardisation des clés de jointure lors de la fusion de sources de données hétérogènes, et les limites du matching par nom exact.
+
+---
+
+## Difficulté 2 : Formats monétaires incohérents
+
+### Problème rencontré
+
+Les valeurs marchandes des joueurs (`value_eur`) étaient stockées sous des formats variés selon les fichiers sources (avec symboles monétaires, unités abrégées comme "M" ou "K", séparateurs différents).
+
+### Recherches / Tests
+
+J'ai analysé les différents formats présents dans les fichiers CSV afin de définir une fonction de parsing générique capable de les interpréter correctement.
+
+### Solution
+
+J'ai développé une fonction de parsing dédiée dans la couche `transform/`, capable de convertir tous ces formats en une valeur numérique standardisée en euros.
+
+### Ce que j'ai appris
+
+Cette difficulté m'a permis d'apprendre à anticiper la variabilité des formats de données réelles et à écrire des fonctions de transformation robustes et réutilisables.
+
+---
+
+# 10. Améliorations possibles
+
+Dans une prochaine version, je pourrais :
+
+- améliorer l'algorithme de correspondance des noms de joueurs (fuzzy matching) ;
+- ajouter des tests automatisés sur les étapes de transformation ;
+- ajouter un scheduler pour automatiser l'exécution périodique du pipeline ;
+- déployer le pipeline sur un environnement cloud avec orchestration (Airflow, par exemple).
+
+### Conclusion
+
+Ces améliorations permettraient de rendre le pipeline plus fiable, plus automatisé et plus facilement exploitable en production pour des besoins de recrutement sportif à grande échelle.
+
+---
+
+# 📊 Sources de données
+
+- Statistiques de joueurs par championnat : Bundesliga, La Liga, Ligue 1, Premier League, Serie A
+- Attributs de joueurs : jeu de données Sofifa pro players
+
+# 🔍 Notes
+
+- L'enrichissement des joueurs (attributs FIFA) est réalisé via une correspondance sur le nom nettoyé du joueur ; certains mismatches peuvent survenir à cause des accents ou des surnoms.
+- L'ensemble du nettoyage des données (typage, dédoublonnage, suppression des espaces/guillemets, parsing monétaire) est géré dans la couche `transform/`.
+
+# 📄 Licence
 
 MIT
